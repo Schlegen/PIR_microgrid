@@ -28,18 +28,18 @@ class Manager:
         if self.balance[-1] > 0: #on exporte
             for name in self.names:
                 player = self.players[name]
-                if player.load[-1] <0. : #pour les producteurs
-                    player.bill.append( -(player.load[-1]/abs(self.production[-1]))*(abs(self.loads[-1]*self.pe)+abs(self.balance[-1]*self.c)) )
-                else: # pour les consommateurs 
-                    player.bill.append( -(player.load[-1]/abs(self.loads[-1]))*abs(self.production[-1]*self.pe) ) #negatif car self.loads negatif
+                if player.load[-1] <0. : #pour les producteurs bill postive
+                    player.bill.append( (-player.load[-1]/self.production[-1])*(-self.loads[-1]*self.pe+self.balance[-1]*self.c) ) #car self.loads est négatif
+                else: # pour les consommateurs bill negative
+                    player.bill.append( player.load[-1]*self.pe )  #negatif car self.loads negatif
         else: #on importe 
 #warning: (faire attention au max)
             for name in self.names:
                 player = self.players[name]
-                if player.load[-1] <0. : #pour les producteurs
-                    player.bill.append( (player.load[-1]/abs(self.production[-1]))*abs(self.loads[-1]*self.pe) )
-                else: # pour les consommateurs 
-                    player.bill.append( (player.load[-1]/abs(self.loads[-1]))*(abs(self.production[-1]*self.pe)+abs(self.balance[-1]*self.v)) )                    
+                if player.load[-1] <0. : #pour les producteurs bill positive
+                    player.bill.append( (player.load[-1]/self.production[-1])*self.loads[-1]*self.pe )
+                else: # pour les consommateurs bill négative
+                    player.bill.append( (player.load[-1]/self.loads[-1])*(self.production[-1]*self.pe-self.balance[-1]*self.v) ) # car le balance est négatif              
                               
             
     def simulation(self, T):
@@ -65,24 +65,14 @@ class Manager:
         for name in self.names:
             player = self.players[name]
             print("\n", name, "\n load =", player.load, "\n bill =", player.bill)
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
             
 
-names=[ "building", "data_center", "PV_production", "VE"]
+names=[ "building", "data_center"] #, "PV_production", "VE"]
 
 manager=Manager(names)        
         
-manager.simulation(10)       
+manager.simulation(1)       
         
         
         
