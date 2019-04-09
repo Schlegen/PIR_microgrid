@@ -6,11 +6,12 @@ from matplotlib.patches import Rectangle
 from matplotlib.collections import PatchCollection
 
 class Player:
-    def __init__(self,load,bill,callfunction):
+    def __init__(self,load,bill,callfunction,supplied,name):
         self.load = load # négatif si on produit
         self.bill =  bill # positif si on produit
         self.callfunction = callfunction
-        
+        self.supplied =supplied
+        self.name=name
     def call(self, t):
         self.load.append(self.callfunction(t+.5))
         
@@ -27,20 +28,39 @@ class Player:
         ax.set_xlim(0,len(self.load))
         ax.set_ylim(1.2*min(0,min(self.load)),1.2*max(self.load))
         ax.grid(True)
+        ax.set_xlabel(self.name+": load")
+        
         
     def plotbills(self):
         fig, ax = plt.subplots(1)
         rects=[]
-        for t in range(len(self.load)):
+        for t in range(len(self.bill)):
             rect= Rectangle( (t,0), 1, self.bill[t] )
             rects.append(rect)
         # Create patch collection with specified colour/alpha
         pc = PatchCollection(rects, alpha=0.5, facecolor="green", edgecolor="black")
         # Add collection to axes
         ax.add_collection(pc)
-        ax.set_xlim(0,len(self.load))
+        ax.set_xlim(0,len(self.bill))
         ax.set_ylim(1.2*min(0,min(self.bill)),1.2*max(0,max(self.bill)))
         ax.grid(True)
+        ax.set_xlabel(self.name+": bill")
+        
+    def plotsupplied(self):
+        fig, ax = plt.subplots(1)
+        rects=[]
+        for t in range(len(self.supplied)):
+            rect= Rectangle( (t,0), 1, self.supplied[t] )
+            rects.append(rect)
+        # Create patch collection with specified colour/alpha
+        pc = PatchCollection(rects, alpha=0.5, facecolor="blue", edgecolor="black")
+        # Add collection to axes
+        ax.add_collection(pc)
+        ax.set_xlim(0,len(self.supplied))
+        ax.set_ylim(1.2*min(0,min(self.supplied)),1.2*max(0,max(self.supplied)))
+        ax.grid(True)
+        ax.set_xlabel(self.name+": supplied load")
+        
         
 class Manager:
     def __init__(self, names, callfunctions):
@@ -48,7 +68,7 @@ class Manager:
         self.callfunctions = callfunctions
         dictionnary_players={}
         for name in names:
-           dictionnary_players[name]=Player([],[], callfunctions[name])         
+           dictionnary_players[name]=Player([],[], callfunctions[name],[],name)         
         self.players = dictionnary_players        
         self.pe = 1.
         self.c = 0.5
@@ -56,23 +76,38 @@ class Manager:
         self.loads = []
         self.production = []
         self.balance = []
+        self.max_power= 12
         
     def repartition(self):
+    
+        if abs(self.loads[-1])>self.max_power : #on dépasse l'intensité maximale possible
+            for name in self.names:
+                player = self.players[name]
+                if player.load[-1]>0 : #consommateur, dont on restreind l'énergie accessible
+                    player.supplied.append(player.load[-1]*(1-(self.max_power+self.loads[-1])/self.loads[-1])) #on réparti le manque proportionellement aux demandes 
+                else : #producteur, dont on garde la production maximale pour minimiser les coûts
+                    player.supplied.append(player.load[-1])
+
+        else : #RAS, la demande égale à ce que le réseau peut fournir
+            for name in self.names:
+                player = self.players[name]
+                player.supplied.append(player.load[-1])
+        
         if self.balance[-1] > 0: #on exporte
             for name in self.names:
                 player = self.players[name]
                 if player.load[-1] <0. : #pour les producteurs bill postive
-                    player.bill.append( (-player.load[-1]/self.production[-1])*(-self.loads[-1]*self.pe+self.balance[-1]*self.c) ) #car self.loads est négatif
+                    player.bill.append( (-player.supplied[-1]/self.production[-1])*(-self.loads[-1]*self.pe+self.balance[-1]*self.c) ) #car self.loads est négatif
                 else: # pour les consommateurs bill negative
-                    player.bill.append( -player.load[-1]*self.pe )  #negatif car self.loads negatif
+                    player.bill.append( -player.supplied[-1]*self.pe )  #negatif car self.loads negatif
         else: #on importe 
 #warning: (faire attention au max)
             for name in self.names:
                 player = self.players[name]
                 if player.load[-1] <0. : #pour les producteurs bill positive
-                    player.bill.append( (-player.load[-1]*self.pe ) )
+                    player.bill.append( (-player.supplied[-1]*self.pe ) )
                 else: # pour les consommateurs bill négative
-                    player.bill.append( (player.load[-1]/self.loads[-1])*(self.production[-1]*self.pe-self.balance[-1]*self.v) ) # car le balance est négatif              
+                    player.bill.append( (player.supplied[-1]/self.loads[-1])*(self.production[-1]*self.pe-self.balance[-1]*self.v) ) # car le balance est négatif              
     
     def plotbalance(self):                         
         fig, ax = plt.subplots(1)
@@ -87,6 +122,7 @@ class Manager:
         ax.set_xlim(0,len(self.balance))
         ax.set_ylim(1.2*min(0,min(self.balance)),1.2*max(0,max(self.balance)))
         ax.grid(True)
+        ax.set_xlabel("Global balance")
         
     def simulation(self, T):
         for t in range(T):
@@ -109,10 +145,13 @@ class Manager:
             print("\n", name)#, "\n load =", player.load, "\n bill =", player.bill)
             player.plotload()
             plt.show()
+            
+            player.plotsupplied()
+            plt.show()
+    
             player.plotbills()
             plt.show()
             
-    
         
                     
 def gaussiancall(t,avg,sigma,maxi): return(maxi*(mh.e**(-((t-avg)**2)/(2*sigma**2)))/2*mh.sqrt(2*mh.pi))  
