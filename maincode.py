@@ -85,4 +85,6 @@ def randomcall(t,avg, sigma):
 callfunctions={"building": (lambda t: squarecall(t,8,18,10)) , "data_center": (lambda t: randomcall(t,7,3)), "PV_production": (lambda t:gaussiancall(t,12,2,-16)),"VE": (lambda t: randomcall(t,0,5))   }        
 names=[ "building", "data_center", "PV_production", "VE"]
 manager=Manager(names,callfunctions)        
-manager.simulation(24)              
+manager.simulation(24)        
+app = SummaryWindow(manager)
+app.mainloop()      

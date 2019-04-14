@@ -74,7 +74,7 @@ def plotbalance(manager,ax):
     ax.grid(True)
     ax.set_xlabel("Global balance")    
        
-class SeaofBTCapp(tk.Tk):
+class SummaryWindow(tk.Tk):
 
     def __init__(self, manager, *args, **kwargs):
         
@@ -198,6 +198,3 @@ class PagePlayer(tk.Frame):
         toolbar.update()
         canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
         
-
-app = SeaofBTCapp(manager)
-app.mainloop()
