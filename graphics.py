@@ -106,17 +106,14 @@ class SummaryWindow(tk.Tk):
         for name in manager.players:
             
             frame= PagePlayer(container, self, manager.players[name])   
-            print("ajout", name)
             self.frames[name] = frame      
-            frame.grid(row=0, column=0, sticky="nsew")
-            
-        for key in self.frames: print("key",key, self.frames[key])            
+            frame.grid(row=0, column=0, sticky="nsew")       
         self.show_frame("StartPage")
 
     def show_frame(self, cont):
 
         frame = self.frames[cont]
-        print("affichage", cont)
+
         frame.tkraise()
 
         
@@ -135,7 +132,6 @@ class StartPage(tk.Frame):
         names=[]
         i=-1
         for name in manager.players:
-            print("bouton",name)
             names.append(name)
             i+=1
             button=ttk.Button(self, text= name, command = lambda toto= i: controller.show_frame(names[toto])) ######## ici astuce 
@@ -172,7 +168,6 @@ class PagePlayer(tk.Frame):
 
     def __init__(self, parent, controller, player):
         tk.Frame.__init__(self, parent)
-        print("remplissage_page", player.name)
         label = tk.Label(self, text=player.name, font=LARGE_FONT)
         label.pack(pady=10,padx=10)
 

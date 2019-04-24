@@ -10,7 +10,8 @@ class Player:
         self.supplied =supplied
         self.name=name
     def call(self, t):
-        self.load.append(self.callfunction(t+.5))              
+        self.load.append(self.callfunction(t+.5))    
+          
 class Manager:
     def __init__(self, names, callfunctions):
         self.names = names
@@ -69,22 +70,4 @@ class Manager:
                     self.production[-1] += -player.load[-1] #production positive
             self.balance.append( self.production[-1]+self.loads[-1]) #positif si on exporte et négatif sinon   
             self.repartition()
-
-## différents types de call
-                    
-def gaussiancall(t,avg,sigma,maxi): return(maxi*(mh.e**(-((t-avg)**2)/(2*sigma**2)))/2*mh.sqrt(2*mh.pi))  
-def squarecall(t, inf, sup, maxi): 
-    if ((t>=inf) and (t<sup)): 
-        return maxi 
-    else:
-        return 0
-def randomcall(t,avg, sigma):
-    return(0.+avg+randint(-sigma,sigma))
-
-        
-callfunctions={"building": (lambda t: squarecall(t,8,18,10)) , "data_center": (lambda t: randomcall(t,7,3)), "PV_production": (lambda t:gaussiancall(t,12,2,-16)),"VE": (lambda t: randomcall(t,0,5))   }        
-names=[ "building", "data_center", "PV_production", "VE"]
-manager=Manager(names,callfunctions)        
-manager.simulation(24)        
-app = SummaryWindow(manager)
-app.mainloop()      
+  
