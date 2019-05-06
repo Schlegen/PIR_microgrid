@@ -1,17 +1,24 @@
 import numpy as np
+import os 
+from numpy.random import randint
 
 class SmartBuilding:
+    def __init__(self,path_to_data_folder):#fichier data, truc spécifique
+        self.path_to_data_folder = path_to_data_folder
+        self.bill = np.zeros(48)
+        self.n_data = 10
+        self.scenario={}
+        
+        self.load=np.zeros(48)
+        self.
 
-	def __init__(path_to_data_folder):
+    def load(self,time):
+        
+        return 0
 
-		self.path_to_data_folder = path_to_data_folder
-		self.bill = np.zeros(48)
+    def draw_random_scenario(self):
 
-
-	def load(time):
-
-		return 0
-
-	def draw_random_scenario():
-
-		return 0
+        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_load_smart-building.csv"))
+        self.scenario["load_smart-building"] = test_load_data_center[randint(self.n_data), :]
+        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_hot_water_demand_smart-building.csv"))
+        self.scenario["hot_water_demand_smart-building"] = test_load_data_center[randint(self.n_data), :]
