@@ -1,17 +1,22 @@
 import numpy as np
+from random import randint
+import os
 
 class SolarFarm:
 
-	def __init__(path_to_data_folder):
+    def __init__(self,path_to_data_folder):
+        self.scenario={}
+        self.path_to_data_folder = path_to_data_folder
+        self.bill = np.zeros(48)
+        self.n_data = 10
 
-		self.path_to_data_folder = path_to_data_folder
-		self.bill = np.zeros(48)
 
+    def load(self,time):
 
-	def load(time):
+            return 0
 
-		return 0
+    def draw_random_scenario(self):
 
-	def draw_random_scenario():
-
-		return 0
+        test_load_solar_farm=np.loadtxt(os.path.join(self.path_to_data_folder,"solar-farm",
+                                                        "test_pv_solar-farm.csv"))
+        self.scenario["load_solar_farm"]=test_load_solar_farm[randint(0,self.n_data), :]
