@@ -19,9 +19,16 @@ class Community:
 		self.smart_building = SmartBuilding(path_to_data_folder)
 		self.solar_farm = SolarFarm(path_to_data_folder)
 
-		self.loads = {"charging_station", "data_center", "smart_building", "solar_farm"}
+		self.prices = {}
+		self.loads = {"charging_station":0.0, "data_center":0.0, "smart_building":0.0,
+			"solar_farm":0.0}
 
 	def play(self):
+
+		self.charging_station.draw_scenario()
+		self.data_center.draw_scenario()
+		self.smart_building.draw_scenario()
+		self.solar_farm.draw_scenario()
 
 		for t in range(self.horizon):
 
