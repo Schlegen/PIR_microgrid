@@ -10,10 +10,16 @@ class SmartBuilding:
         self.scenario={}
         
         self.load=np.zeros(48)
-        self.
 
-    def load(self,time):
-        
+    def load(self, time):
+        return self.not_flexible(time) + self.flexible(time) 
+
+    def not_flexible(self, time):
+
+        return 0 
+
+    def flexible(self, time):
+
         return 0
 
     def draw_random_scenario(self):
