@@ -12,34 +12,41 @@ class SolarFarm:
         self.charge=np.zeros(48)
         self.capacite=100
         self.efficiency=0.95
-        self.overload=35
+        self.overload=70
+        self.timestep=0.5
     def load(self,time):
 
             return self.flexible(time)+self.not_flexible(time)
     
     def flexible(self,time):
-        return(10)
+        return(80)
         
     def not_flexible(self,time):
+        limitation = 0
         charge=self.flexible(time)
-        if charge>
+        if charge > self.overload:
+            limitation = self.overload-charge
+            charge=self.overload
+        if charge < -self.overload:
+            limitation = -self.overload-charge
+            charge=-self.overload
         if charge > 0:
             available_charge=self.capacite-self.charge[time-1]
-            if self.efficiency*charge < available_charge:
-                self.charge[time] = self.charge[time-1] + self.efficiency*charge/2
+            if self.efficiency*charge*self.timestep < available_charge:
+                self.charge[time] = self.charge[time-1] + self.efficiency*charge*self.timestep
                 charge=0
             else:
-                charge = charge-(available_charge/self.efficiency)
+                charge = charge-(available_charge/(self.efficiency*self.timestep))
                 self.charge[time]=self.capacite
-        if self.flexible(time) < 0:
+        if charge < 0:
             available_charge = self.charge[time-1]
-            if -charge/self.efficiency < available_charge:
-                self.charge[time] = available_charge + charge/self.efficiency
+            if -charge*self.timestep/self.efficiency < available_charge:
+                self.charge[time] = available_charge + charge*self.timestep/self.efficiency
                 charge=0
             else:
-                charge = charge+(available_charge*self.efficiency)
+                charge = charge+(available_charge*self.efficiency/self.timestep)
                 self.charge[time]=0
-        return(-self.scenario["load_solar_farm"][time]-charge)
+        return(-self.scenario["load_solar_farm"][time]-charge+limitation)
     
     def draw_random_scenario(self):
 
