@@ -29,7 +29,7 @@ class Community:
 		self.prices = {"internal":prices[0, :], "external_purchase":prices[1, :], 
 			"external_sale":prices[2, :]}
 
-	def initialize_heat_transactions():
+	def initialize_heat_transactions(self):
 		## à compléter
 		return 0
 
