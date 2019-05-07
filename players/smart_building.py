@@ -21,10 +21,10 @@ class SmartBuilding:
         self.T_com=273+60
         self.COP=(self.T_com/(self.T_com-self.T_in))*self.e
         self.delta_t=3600/2
-        slef.stock[0]=1 
+        self.stock[0]=0.25*self.rho*self.V*self.c_p*(self.T_com - self.T_in)
 
-    def load(self, time, heat_exchange):
-        return self.not_flexible(time, heat_exchange) + self.flexible(time, heat_exchange) 
+    def compute_load(self, time, heat_exchange):
+        self.load[time]=self.not_flexible(time, heat_exchange) + self.flexible(time, heat_exchange) 
 
     def thermic_load(self, time):
         
@@ -39,6 +39,8 @@ class SmartBuilding:
     def flexible(self, time, heat_exchange):
         
         #on demande une certaine énergie pour chauffer le ballon
+        
+        thermal_load=0
         
         return (thermal_load) #énergie demandée pour chauffer le ballon
 
