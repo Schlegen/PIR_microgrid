@@ -13,14 +13,16 @@ class DataCenter:
         self.dt = 0.5
         self.EER = 4
         self.COP = self.EER + 1
-        self.heat_balance = np.zeros(48)
+        self.heat_balance = np.zeros((48,2))
         self.load = np.zeros(48)
+        self.supply_curve = self.thermic_supply()
         
     def thermic_supply(self):
         
-        prices= np.zeros((48,6)
-        # to complete
-        return(prices)
+        supply_curve= np.zeros((48,6))
+        # to be completed by the students
+
+        return supply_curve
         
     def flexible(self,time):
         lHP = 0

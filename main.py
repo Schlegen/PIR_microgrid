@@ -42,35 +42,35 @@ class Community:
 
 	def initialize_heat_transactions(self):
 
-		LDC = self.players["data_center"].call_heat()
-		LSB = self.players["smart_building"].call_heat()
+		q_dc = self.players["data_center"].supply_curve
+		q_sb = self.players["smart_building"].thermic_demand()
 
-		for t in range(0,48):
-			q=0
-			while LSB[t,q]>LDC[t,q] and q < 6:
+		for t in range(48):
+			q = 0
+			while q_sb[t,q]>q_dc[t,q] and q < 6:
 				q+=1
 
 			if q == 6: #no equilibrium
 
-				eq=(qeq,peq)
+				eq = (0,0)
 
 			else:
 
-				SB1, SB2 = LSB[t,q-1], LSB[t,q]
-				DC1, DC2 = LDC[t,q-1], LDC[t,q]
+				sb1, sb2 = q_sb[t,q-1], q_sb[t,q]
+				dc1, dc2 = q_dc[t,q-1], q_dc[t,q]
 
-				A = (SB1-SB2) #/1
-				B = SB1[1]-A*(q-1)
-				C = (DC1-DC2) #/1
-				D = DC1[1]-A*(q-1)
+				A = (sb1-sb2) #/1
+				B = sb1[1]-A*(q-1)
+				C = (dc1-dc2) #/1
+				D = dc1[1]-A*(q-1)
 
-				qeq=(D-B)/(A-C)
-				peq=A*qeq+B
+				qeq = (D-B)/(A-C)
+				peq = A*qeq+B
 
-				eq=(qeq,peq)
+				eq = [qeq,peq]
 
-			self.players["data_center"].heat_balance[time]=eq
-			self.players["smart_building"].heat_balanc[time]=eq
+			self.players["data_center"].heat_balance[time] = eq
+			self.players["smart_building"].heat_balance[time] = eq
 
 	def call_loads(self, time):
 
