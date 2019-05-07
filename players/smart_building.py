@@ -3,24 +3,62 @@ import os
 from numpy.random import randint
 
 class SmartBuilding:
-    def __init__(self,path_to_data_folder):#fichier data, truc spécifique
+    def __init__(self,path_to_data_folder):#fichier data
         self.path_to_data_folder = path_to_data_folder
         self.bill = np.zeros(48)
         self.n_data = 10
         self.scenario={}
-        
+        self.stock=np.zeros(49)
         self.load=np.zeros(48)
+        
+        #données du ballon d'eau chaude
+        self.e=0.4
+        self.r=0.05
+        self.c_p=4200
+        self.rho=1
+        self.V=400
+        self.T_in=273+15
+        self.T_com=273+60
+        self.COP=(self.T_com/(self.T_com-self.T_in))*self.e
+        self.delta_t=3600/2
+        self.stock[0]=0.25*self.rho*self.V*self.c_p*(self.T_com - self.T_in)
 
-    def load(self, time):
-        return self.not_flexible(time) + self.flexible(time) 
+    def compute_load(self, time, heat_exchange):
+        self.load[time]=self.not_flexible(time, heat_exchange) + self.flexible(time, heat_exchange) 
 
-    def not_flexible(self, time):
+    def thermic_load(self, time):
+        
+        prices=np.zeros((6))
+        
+        #mettre prices à jour avec le prix unitaire du kW/h aux quantitées : 0;0,2;0,4;0,6;0,8;1 de q_max
+        
+        
+        return(prices)
+        
 
-        return 0 
+    def flexible(self, time, heat_exchange):
+        
+        #on demande une certaine énergie pour chauffer le ballon
+        
+        thermal_load=0
+        
+        return (thermal_load) #énergie demandée pour chauffer le ballon
 
-    def flexible(self, time):
 
-        return 0
+    def not_flexible(self, time, heat_exchange):
+        
+        load=0
+        
+        load+=self.scenario['load_smart-building'][t] #demande en énergie domestique
+        
+        #Evolution du stock d'eau chaude:
+        stock[time+1]=(1-self.r)*stock[time]+heat_exchange-self.scenario['hot_water_demand_smart-building'][t]+(self.COP*self.detla_t*flexible(self,time,heat_exchange))
+        
+        if (stock[time+1]<0):#on s'assure qu'il y ait assez d'eau chaude
+            load+=(-self.stock[times+1]/(self.delta_t*self.COP))
+            stock[time+1]=0
+        return load
+
 
     def draw_random_scenario(self):
 
