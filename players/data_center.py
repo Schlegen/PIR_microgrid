@@ -16,18 +16,20 @@ class DataCenter:
         self.heat_balance = np.zeros((48,2))
         self.load = np.zeros(48)
         self.supply_curve = self.thermic_supply()
-        
+        self.COP_HP=0.4*(273+60)/(60-35)
+                
+    def not_flexible(self,time):
+        lIT = self.scenario["load_data_center"][t]
+
     def thermic_supply(self):
         
-        supply_curve= np.zeros((48,6))
+        supply_curve = np.zeros((48,6))
         # to be completed by the students
 
         return supply_curve
         
     def flexible(self,time):
-        lHP = 0
-        if self.heat_balance[time][0] > 0:
-            LHP=1
+        lHP = self.heat_balance[time][0]/self.COP_HP*dt
         return(0)
         
     def not_flexible(self,time):
