@@ -29,10 +29,6 @@ class Community:
 		self.prices = {"internal":prices[0, :], "external_purchase":prices[1, :], 
 			"external_sale":prices[2, :]}
 
-	def initialize_heat_transactions(self):
-		## à compléter
-		return 0
-
 	def play(self):
 
 		for name, player in self.players.items():
@@ -40,11 +36,12 @@ class Community:
 
 		for t in range(self.horizon):
 
-			self.call_heat(t)
+#			self.call_heat(t)
 			load, demand, supply = self.call_loads(t)
 			self.compute_bills(t, load, demand, supply)
 
-	def call_heat(self, time):
+	def initialize_heat_transactions(self):
+
 		LDC = self.players["data_center"].call_heat()
 		LSB = self.players["smart_building"].call_heat()
 
@@ -53,27 +50,27 @@ class Community:
 			while LSB[t,q]>LDC[t,q] and q < 6:
 				q+=1
 
-		if q == 6: #no equilibrium
+			if q == 6: #no equilibrium
 
-			eq=(qeq,peq)
+				eq=(qeq,peq)
 
-		else:
+			else:
 
-			SB1, SB2 = LSB[t,q-1], LSB[t,q]
-			DC1, DC2 = LDC[t,q-1], LDC[t,q]
+				SB1, SB2 = LSB[t,q-1], LSB[t,q]
+				DC1, DC2 = LDC[t,q-1], LDC[t,q]
 
-			A = (SB1-SB2) #/1
-			B = SB1[1]-A*(q-1)
-			C = (DC1-DC2) #/1
-			D = DC1[1]-A*(q-1)
+				A = (SB1-SB2) #/1
+				B = SB1[1]-A*(q-1)
+				C = (DC1-DC2) #/1
+				D = DC1[1]-A*(q-1)
 
-			qeq=(D-B)/(A-C)
-			peq=A*qeq+B
+				qeq=(D-B)/(A-C)
+				peq=A*qeq+B
 
-			eq=(qeq,peq)
+				eq=(qeq,peq)
 
-		self.players["data_center"].heat_balance[time]=eq
-		self.players["smart_building"].heat_balanc[time]=eq
+			self.players["data_center"].heat_balance[time]=eq
+			self.players["smart_building"].heat_balanc[time]=eq
 
 	def call_loads(self, time):
 
