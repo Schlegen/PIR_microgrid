@@ -45,8 +45,35 @@ class Community:
 			self.compute_bills(t, load, demand, supply)
 
 	def call_heat(self, time):
-		## à compléter
-		return 0
+		LDC = self.players["data_center"].call_heat()
+		LSB = self.players["smart_building"].call_heat()
+
+		for t in range(0,48):
+			q=0
+			while LSB[t,q]>LDC[t,q] and q < 6:
+				q+=1
+
+		if q == 6: #no equilibrium
+
+			eq=(qeq,peq)
+
+		else:
+
+			SB1, SB2 = LSB[t,q-1], LSB[t,q]
+			DC1, DC2 = LDC[t,q-1], LDC[t,q]
+
+			A = (SB1-SB2) #/1
+			B = SB1[1]-A*(q-1)
+			C = (DC1-DC2) #/1
+			D = DC1[1]-A*(q-1)
+
+			qeq=(D-B)/(A-C)
+			peq=A*qeq+B
+
+			eq=(qeq,peq)
+
+		self.players["data_center"].heat_balance[time]=eq
+		self.players["smart_building"].heat_balanc[time]=eq
 
 	def call_loads(self, time):
 
@@ -82,8 +109,3 @@ class Community:
 				player.bill[time] += purchase * load / demand
 			else:
 				player.bill[time] -= sale * load / supply
-
-
-
-
-
