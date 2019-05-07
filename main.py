@@ -29,10 +29,6 @@ class Community:
 		self.prices = {"internal":prices[0, :], "external_purchase":prices[1, :], 
 			"external_sale":prices[2, :]}
 
-	def initialize_heat_transactions(self):
-		## à compléter
-		return 0
-
 	def play(self):
 
 		for name, player in self.players.items():
@@ -40,13 +36,41 @@ class Community:
 
 		for t in range(self.horizon):
 
-			self.call_heat(t)
+#			self.call_heat(t)
 			load, demand, supply = self.call_loads(t)
 			self.compute_bills(t, load, demand, supply)
 
-	def call_heat(self, time):
-		## à compléter
-		return 0
+	def initialize_heat_transactions(self):
+
+		q_dc = self.players["data_center"].supply_curve
+		q_sb = self.players["smart_building"].thermic_demand()
+
+		for t in range(48):
+			q = 0
+			while q_sb[t,q]>q_dc[t,q] and q < 6:
+				q+=1
+
+			if q == 6: #no equilibrium
+
+				eq = (0,0)
+
+			else:
+
+				sb1, sb2 = q_sb[t,q-1], q_sb[t,q]
+				dc1, dc2 = q_dc[t,q-1], q_dc[t,q]
+
+				A = (sb1-sb2) #/1
+				B = sb1[1]-A*(q-1)
+				C = (dc1-dc2) #/1
+				D = dc1[1]-A*(q-1)
+
+				qeq = (D-B)/(A-C)
+				peq = A*qeq+B
+
+				eq = [qeq,peq]
+
+			self.players["data_center"].heat_balance[time] = eq
+			self.players["smart_building"].heat_balance[time] = eq
 
 	def call_loads(self, time):
 
@@ -82,8 +106,3 @@ class Community:
 				player.bill[time] += purchase * load / demand
 			else:
 				player.bill[time] -= sale * load / supply
-
-
-
-
-

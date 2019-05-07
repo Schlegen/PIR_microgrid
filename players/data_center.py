@@ -1,7 +1,6 @@
 import numpy as np
 import os
 from numpy.random import randint
-import matplotlib.pyplot as plt
 
 class DataCenter:
 
@@ -11,17 +10,40 @@ class DataCenter:
         self.bill = np.zeros(48)
         self.n_data = 10
         self.scenario = {}
+        self.dt = 0.5
+        self.EER = 4
+        self.COP = self.EER + 1
+        self.heat_balance = np.zeros((48,2))
+        self.load = np.zeros(48)
+        self.supply_curve = self.thermic_supply()
+        self.COP_HP=0.4*(273+60)/(60-35)
+                
+    def not_flexible(self,time):
+        lIT = self.scenario["load_data_center"][t]
 
+    def thermic_supply(self):
+        
+        supply_curve = np.zeros((48,6))
+        # to be completed by the students
 
-    def load(self,time):
-
-        return 0
-
+        return supply_curve
+        
+    def flexible(self,time):
+        lHP = self.heat_balance[time][0]/self.COP_HP*dt
+        return(0)
+        
+    def not_flexible(self,time):
+        lIT = self.scenario["load_data_center"][t]
+        hIT = lIT 
+        lCS = hIT/(self.dt*self.EER)
+        return(0)
+        
+    def compute_load(self,time): #not_flexible
+        self.load[time]=self.flexible(time)+self.not_flexible(time)
+    
     def draw_random_scenario(self):
 
         test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "data-center",
                                                         "test_load_data-center.csv"))
         self.scenario["load_data_center"] = test_load_data_center[randint(self.n_data), :]
 
-    def plot_scenario(self):
-        plt.plot(range(0,len(self.scenario["load_data_center"])),self.scenario["load_data_center"])
