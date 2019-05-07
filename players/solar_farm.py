@@ -10,16 +10,19 @@ class SolarFarm:
         self.bill = np.zeros(48)
         self.n_data = 10
         self.charge=np.zeros(48)
-        self.capacite=100
+        self.capacity =100
         self.efficiency=0.95
         self.overload=70
         self.timestep=0.5
-    def load(self,time):
+        self.load=np.zeros(48)
+    
+    
+    def compute_load(self,time):
 
-            return self.flexible(time)+self.not_flexible(time)
+            self.load[time] = self.flexible(time)+self.not_flexible(time)
     
     def flexible(self,time):
-        return(80)
+        return(0)
         
     def not_flexible(self,time):
         limitation = 0
@@ -31,13 +34,13 @@ class SolarFarm:
             limitation = -self.overload-charge
             charge=-self.overload
         if charge > 0:
-            available_charge=self.capacite-self.charge[time-1]
+            available_charge=self.capacity-self.charge[time-1]
             if self.efficiency*charge*self.timestep < available_charge:
                 self.charge[time] = self.charge[time-1] + self.efficiency*charge*self.timestep
                 charge=0
             else:
                 charge = charge-(available_charge/(self.efficiency*self.timestep))
-                self.charge[time]=self.capacite
+                self.charge[time]=self.capacity
         if charge < 0:
             available_charge = self.charge[time-1]
             if -charge*self.timestep/self.efficiency < available_charge:
