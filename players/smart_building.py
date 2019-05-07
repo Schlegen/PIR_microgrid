@@ -10,7 +10,8 @@ class SmartBuilding:
         self.scenario={}
         self.stock=np.zeros(49)
         self.load=np.zeros(48)
-        self.heat_balance=np.zeros(48)
+        self.heat_balance=np.zeros((48,2))
+        self.demand_curves=self.thermic_demand()
         
         #données du ballon d'eau chaude
         self.e=0.4
@@ -22,42 +23,49 @@ class SmartBuilding:
         self.T_com=273+60
         self.COP=(self.T_com/(self.T_com-self.T_in))*self.e
         self.delta_t=3600/2
-        self.stock[0]=0.25*self.rho*self.V*self.c_p*(self.T_com - self.T_in)
+
+        self.max_capacity_hwt=self.rho*self.V*self.c_p*(self.T_com - self.T_in)
+        self.stock[0]=0.25*self.max_capacity_hwt
 
     def compute_load(self, time):
         self.load[time]=self.not_flexible(time) + self.flexible(time) 
 
-    def call_heat(self):
+    def thermic_demand(self):
         
-        prices=np.zeros((48,6))
+        demand_curves=np.zeros((48,6))
         
-        #mettre prices à jour avec le prix unitaire du kW/h aux quantitées : 0;0,2;0,4;0,6;0,8;1 de q_max
+        #to be completed by the students
         
         
-        return(prices)
+        return demand_curves
         
 
     def flexible(self, time):
         
-        #on demande une certaine énergie pour chauffer le ballon
+        #To be completed : electric power required to heat the water tank
         
-        thermal_load=0
+        load_h=0
         
-        return (thermal_load) #énergie demandée pour chauffer le ballon
+
+        return load_h 
 
 
     def not_flexible(self, time):
         
-        load=0
+        load = self.scenario['load_smart-building'][time] #houshold power demand
         
-        load+=self.scenario['load_smart-building'][t] #demande en énergie domestique
+        #Evolution of the hot water tank
+        stock[time+1] = (1-self.r)*stock[time]+heat_balance[time][0]
+        -self.scenario['hot_water_demand_smart-building'][time]+
+        (self.COP*self.detla_t*self.flexible(time))
         
-        #Evolution du stock d'eau chaude:
-        stock[time+1]=(1-self.r)*stock[time]+heat_balance[time]-self.scenario['hot_water_demand_smart-building'][t]+(self.COP*self.detla_t*flexible(self,time,heat_exchange))
-        
-        if (stock[time+1]<0):#on s'assure qu'il y ait assez d'eau chaude
-            load+=(-self.stock[times+1]/(self.delta_t*self.COP))
-            stock[time+1]=0
+        if (stock[time+1]<0):#if there isn't enough hot water
+            load+=(-self.stock[time+1]/(self.delta_t*self.COP)) #the required power is bought anyway
+            stock[time+1] = 0
+
+        if stock[time+1]>self.max_capacity_hwt:
+            stock[time+1] = self.max_capacity_hwt
+
         return load
 
 
