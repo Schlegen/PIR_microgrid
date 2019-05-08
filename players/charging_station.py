@@ -14,14 +14,14 @@ class ChargingStation:
 
         self.path_to_data_folder = path_to_data_folder
         self.n_data = 10
-        self.scenario = {}
         self.dt = 0.5
 
+        self.efficiency = 0.95
+
+        self.scenario = {}
         self.bill = np.zeros(48)
         self.load = np.zeros(48)
-
         self.battery_stock = np.zeros(49)
-        self.efficiency = 0.95
 
     def flexible(self,time):
 
@@ -72,6 +72,10 @@ class ChargingStation:
         #tableau NPY
         test_load_charging_station_capacity = np.load(os.path.join(self.path_to_data_folder, "charging-station","test_capacity_power_soc_charging-station.npy"))
         self.scenario["load_charging_station_capacity"]= test_load_charging_station_capacity [randint(self.n_data),:,:] 
+
+        self.bill = np.zeros(48)
+        self.load = np.zeros(48)
+        self.battery_stock = np.zeros(49)
 
 
 """

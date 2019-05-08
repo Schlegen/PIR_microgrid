@@ -15,11 +15,7 @@ class DataCenter:
 
         self.path_to_data_folder = path_to_data_folder
         self.n_data = 10
-        self.scenario = {}
         self.dt = 0.5
-
-        self.bill = np.zeros(48)
-        self.load = np.zeros(48)
 
         self.EER = 4
         self.COP = self.EER + 1
@@ -27,6 +23,10 @@ class DataCenter:
 
         self.supply_curves = self.heat_supply()
         self.heat_transactions = np.zeros((48,2))
+
+        self.scenario = {}
+        self.bill = np.zeros(48)
+        self.load = np.zeros(48)
                 
     def heat_supply(self):
         
@@ -54,6 +54,9 @@ class DataCenter:
         test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "data-center",
                                                         "test_load_data-center.csv"))
         self.scenario["load_data_center"] = test_load_data_center[randint(self.n_data), :]
+
+        self.bill = np.zeros(48)
+        self.load = np.zeros(48)
 
 
 """

@@ -14,16 +14,17 @@ class SolarFarm:
 
         self.path_to_data_folder = path_to_data_folder
         self.n_data = 10
-        self.scenario = {}
         self.dt = 0.5
 
-        self.bill = np.zeros(48)
-        self.load = np.zeros(48)
-
-        self.battery_stock = np.zeros(49)
         self.capacity =100
         self.efficiency=0.95
         self.max_load=70
+
+        self.scenario = {}
+        self.bill = np.zeros(48)
+        self.load = np.zeros(48)
+        self.battery_stock = np.zeros(49)
+        
 
     def flexible(self,time):
 
@@ -64,6 +65,10 @@ class SolarFarm:
         test_load_solar_farm=np.loadtxt(os.path.join(self.path_to_data_folder,"solar-farm",
                                                         "test_pv_solar-farm.csv"))
         self.scenario["load_solar_farm"]=test_load_solar_farm[randint(0,self.n_data), :]
+
+        self.bill = np.zeros(48)
+        self.load = np.zeros(48)
+        self.battery_stock = np.zeros(49)
 
 
 """

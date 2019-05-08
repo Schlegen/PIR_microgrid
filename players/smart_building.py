@@ -13,15 +13,7 @@ class SmartBuilding:
 
         self.path_to_data_folder = path_to_data_folder
         self.n_data = 10
-        self.scenario = {}
         self.dt = 0.5
-
-        self.bill = np.zeros(48)
-        self.load = np.zeros(48)
-   
-        self.heat_stock=np.zeros(49)     
-        self.demand_curves=self.heat_demand()
-        self.heat_transactions=np.zeros((48,2))
         
         #données du ballon d'eau chaude
         self.e=0.4
@@ -33,7 +25,15 @@ class SmartBuilding:
         self.T_com=273+60
         self.COP=(self.T_com/(self.T_com-self.T_in))*self.e
 
-        self.max_capacity_hwt=self.rho*self.V*self.c_p*(self.T_com - self.T_in)
+        self.max_capacity_hwt=self.rho*self.V*self.c_p*(self.T_com - self.T_in) / (3600 * 1000) # kWh !
+
+        self.demand_curves=self.heat_demand()
+        self.heat_transactions=np.zeros((48,2))
+
+        self.scenario = {}
+        self.bill = np.zeros(48)
+        self.load = np.zeros(48)
+        self.heat_stock=np.zeros(49)
         self.heat_stock[0]=0.25*self.max_capacity_hwt
 
     def heat_demand(self):
@@ -92,6 +92,11 @@ class SmartBuilding:
         self.scenario["load_smart-building"] = test_load_data_center[randint(self.n_data), :]
         test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_hot_water_demand_smart-building.csv"))
         self.scenario["hot_water_demand_smart-building"] = test_load_data_center[randint(self.n_data), :]
+
+        self.bill = np.zeros(48)
+        self.load = np.zeros(48)
+        self.heat_stock=np.zeros(49)
+        self.heat_stock[0]=0.25*self.max_capacity_hwt
 
 
 """

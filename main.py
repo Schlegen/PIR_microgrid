@@ -52,9 +52,9 @@ class Community:
 				dc1, dc2 = q_dc[t,q-1], q_dc[t,q]
 
 				A = (sb2-sb1) / 2 #dy/dx
-				B = sb1-A*(q-1)
+				B = sb1-A*(q-1)*2
 				C = (dc2-dc1) / 2 #dy/dx
-				D = dc1-C*(q-1)
+				D = dc1-C*(q-1)*2
 
 				qeq = (D-B)/(A-C)
 				peq = A*qeq+B
@@ -75,6 +75,36 @@ class Community:
 			self.compute_electricity_bills(t, load, demand, supply)
 			self.compute_heat_bills(t)
 
+	def simulate(self, path_to_save_folder, n=1000):
+
+		loads = numpy.zeros((4, n, 48))
+		bills = numpy.zeros((4, n, 48))
+		stocks = numpy.zeros((3, n, 49))
+
+		keys = {"charging_station": 0, 
+			"data_center": 1, 
+			"smart_building": 2,
+			"solar_farm": 3}
+
+		for i in range(n):
+
+			self.play()
+
+			for name, player in self.players.items():
+				j = keys[name]
+				loads[j, i, :] = player.load
+				bills[j, i, :] = player.bill
+				if name == "charging_station":
+					stocks[0, i, :] = player.battery_stock
+				elif name == "smart_building":
+					stocks[1, i, :] = player.heat_stock
+				elif name == "solar_farm":
+					stocks[2, i, :] = player.battery_stock
+				j += 1
+
+		numpy.save(os.path.join(path_to_save_folder, "load"), loads)
+		numpy.save(os.path.join(path_to_save_folder, "bill"), bills)
+		numpy.save(os.path.join(path_to_save_folder, "stock"), stocks)
 
 	def call_loads(self, time):
 
@@ -132,4 +162,4 @@ if __name__ == '__main__':
 	opt = parser.parse_args()
 
 	community = Community(opt.data)
-	community.simulate(opt.simulations)
+	community.simulate(opt.save, opt.simulations)
