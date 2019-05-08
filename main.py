@@ -1,5 +1,6 @@
 import numpy 
 import os
+import argparse
 
 from players.charging_station import ChargingStation
 from players.data_center import DataCenter
@@ -29,48 +30,51 @@ class Community:
 		self.prices = {"internal":prices[0, :], "external_purchase":prices[1, :], 
 			"external_sale":prices[2, :]}
 
-	def play(self):
-
-		for name, player in self.players.items():
-			player.draw_scenario()
-
-		for t in range(self.horizon):
-
-#			self.call_heat(t)
-			load, demand, supply = self.call_loads(t)
-			self.compute_bills(t, load, demand, supply)
-
 	def initialize_heat_transactions(self):
 
-		q_dc = self.players["data_center"].supply_curve
-		q_sb = self.players["smart_building"].thermic_demand()
+		q_dc = self.players["data_center"].supply_curves
+		q_sb = self.players["smart_building"].demand_curves
 
 		for t in range(48):
 			q = 0
-			while q_sb[t,q]>q_dc[t,q] and q < 6:
+			while q_sb[t,q] >= q_dc[t,q]:
 				q+=1
+				if q == 6:
+					break
 
 			if q == 6: #no equilibrium
 
-				eq = (0,0)
+				eq = [0,0]
 
 			else:
 
 				sb1, sb2 = q_sb[t,q-1], q_sb[t,q]
 				dc1, dc2 = q_dc[t,q-1], q_dc[t,q]
 
-				A = (sb1-sb2) #/1
-				B = sb1[1]-A*(q-1)
-				C = (dc1-dc2) #/1
-				D = dc1[1]-A*(q-1)
+				A = (sb2-sb1) / 2 #dy/dx
+				B = sb1-A*(q-1)
+				C = (dc2-dc1) / 2 #dy/dx
+				D = dc1-C*(q-1)
 
 				qeq = (D-B)/(A-C)
 				peq = A*qeq+B
 
 				eq = [qeq,peq]
 
-			self.players["data_center"].heat_balance[time] = eq
-			self.players["smart_building"].heat_balance[time] = eq
+			self.players["data_center"].heat_transactions[t] = eq
+			self.players["smart_building"].heat_transactions[t] = eq
+
+	def play(self):
+
+		for name, player in self.players.items():
+			player.draw_random_scenario()
+
+		for t in range(self.horizon):
+
+			load, demand, supply = self.call_loads(t)
+			self.compute_electricity_bills(t, load, demand, supply)
+			self.compute_heat_bills(t)
+
 
 	def call_loads(self, time):
 
@@ -91,12 +95,12 @@ class Community:
 
 		return total_load, demand, supply
 
-	def compute_bills(self, time, load, demand, supply):
+	def compute_electricity_bills(self, time, load, demand, supply):
 
-		internal_trade = self.dt*self.prices["internal"]*min(demand, supply)
+		internal_trade = self.dt*self.prices["internal"][time]*min(demand, supply)
 
-		purchase = internal_trade + self.prices["external_purchase"]*max(0, load)*self.dt
-		sale = internal_trade + self.prices["external_purchase"]*max(0, -load)*self.dt
+		purchase = internal_trade + self.prices["external_purchase"][time]*max(0, load)*self.dt
+		sale = internal_trade + self.prices["external_purchase"][time]*max(0, -load)*self.dt
 
 		for name, player in self.players.items():
 
@@ -106,3 +110,26 @@ class Community:
 				player.bill[time] += purchase * load / demand
 			else:
 				player.bill[time] -= sale * load / supply
+
+	def compute_heat_bills(self, time):
+
+		eq = self.players["data_center"].heat_transactions[time]
+		heat = eq[0]
+		price = eq[1]
+
+		self.players["data_center"].bill -= heat*price
+		self.players["smart_building"].bill += heat*price
+
+
+if __name__ == '__main__':
+
+	parser = argparse.ArgumentParser()
+
+	parser.add_argument('-d', '--data', type=str, required=True, help='folder hosting data')
+	parser.add_argument('-s', '--save', type=str, required=True, help='folder to save results')
+	parser.add_argument('--simulations', type=int, default=100, help='number of simulations')
+
+	opt = parser.parse_args()
+
+	community = Community(opt.data)
+	community.simulate(opt.simulations)
