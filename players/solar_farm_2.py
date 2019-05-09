@@ -8,7 +8,7 @@ Some fields must be completed by students
 
 """
 
-class SolarFarm:
+class SolarFarm2:
 
     def __init__(self,path_to_data_folder):
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
 
     current_path = os.path.dirname(os.path.realpath(__file__))
     path_to_data = os.path.join(current_path, "..", "data")
-    solar_farm = SolarFarm(path_to_data)
+    solar_farm = SolarFarm2(path_to_data)
 
     solar_farm.draw_random_scenario()
     solar_farm.compute_load(0)
