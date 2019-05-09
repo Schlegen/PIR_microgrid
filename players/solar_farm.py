@@ -30,7 +30,22 @@ class SolarFarm:
 
         load_battery = 0
         
-        ## to be completed by the students ##
+        
+
+        if time < 12:
+            load_battery = 34
+
+        if (time >11 and time < 26):
+            load_battery = -34
+    
+        if time > 29 and time < 38:
+                load_battery = 65
+    
+        if (time > 37 and time < 42):
+                load_battery = -50
+    
+        if (time > 41) :
+                load_battery = -12
 
         return load_battery
 

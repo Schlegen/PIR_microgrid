@@ -29,8 +29,27 @@ class SolarFarm:
     def flexible(self,time):
 
         load_battery = 0
-        
-        ## to be completed by the students ##
+
+        if (time<3):
+            load_battery = 0
+
+        if (time > 2 and time < 12):
+            load_battery = 10
+    
+        if (time == 12):
+                load_battery = 20
+    
+        if (time > 12 and time < 17):
+                load_battery =- 25
+
+        if (time > 16 and time < 39):
+            load_battery = 20
+
+        if (time > 38 and time < 45):
+            load_battery =- 20
+    
+        if (time > 44 and time < 48):
+            load_battery = -20
 
         return load_battery
 
