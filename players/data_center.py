@@ -31,6 +31,19 @@ class DataCenter:
     def heat_supply(self):
         
         supply_curves = np.zeros((48,6))
+        mini,maxi=0,0
+        for t in range (48):
+            if (t>=0 and t<12) or t>=44:
+                maxi=0.057/1.98
+                mini=0.06/2.66
+            if (t>=12 and t<16) or (t>=40 and t<44):
+                maxi=0.09/1.98
+                mini=0.10/2.66
+            if (t>=16 and t<40):
+                maxi=0.08/1.98
+                mini=0.1/2.66
+            for q in range(6):
+                supply_curves[t][q]=(2*q/10)*maxi+(1-2*q/10)*mini
 
         ## to be completed by the students ##
 

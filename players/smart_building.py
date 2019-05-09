@@ -41,9 +41,26 @@ class SmartBuilding:
         demand_curves=np.zeros((48,6))
         
         ## to be completed by the students ##
+        for t in range(48):
+            if t<10:
+                for i in range(6):
+                    demand_curves[t][i]=0
+            if 10<=t<=20:
+                for i in range(6):
+                    demand_curves[t][i]=0.1*i
+            if 20<=t<=36:
+                for i in range(6):
+                    demand_curves[t][i]=0.06*i
+            if 36<=t<=44:
+                for i in range(6):
+                    demand_curves[t][i]=0.08*i
+            if 44<=t:
+                for i in range(6):
+                    demand_curves[t][i]=0.06*i
+        
         
         return demand_curves
-        
+
 
     def flexible(self, time):
 
@@ -53,6 +70,13 @@ class SmartBuilding:
         load_heat_pump = 0
         
         ## to be completed by the students ##
+        if 4<=time and time<=6: 
+            load_heat_pump = 4
+        if 9<=time and time<=11:
+            load_heat_pump = 2
+        if 24<=time and time<=36:
+            load_heat_pump = 1
+        
 
         return load_heat_pump
 
@@ -88,9 +112,9 @@ class SmartBuilding:
 
     def draw_random_scenario(self):
 
-        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_load_smart-building.csv"))
+        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","train_load_smart-building.csv"))
         self.scenario["load_smart-building"] = test_load_data_center[randint(self.n_data), :]
-        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_hot_water_demand_smart-building.csv"))
+        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","train_hot_water_demand_smart-building.csv"))
         self.scenario["hot_water_demand_smart-building"] = test_load_data_center[randint(self.n_data), :]
 
         self.bill = np.zeros(48)
