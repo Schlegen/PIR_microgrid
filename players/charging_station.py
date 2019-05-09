@@ -39,6 +39,7 @@ class ChargingStation:
 
 	def update_batterie_stock(self, time, load_battery):
 		
+		
 		cmax = self.scenario["load_charging_station_capacity"][0,time] # Available Capacity   
 		pmax = self.scenario["load_charging_station_capacity"][1,time] # Available Power
 		soc = self.scenario["load_charging_station_capacity"][2,time]  # State Of Charge of the vehicles
