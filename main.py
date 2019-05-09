@@ -6,6 +6,8 @@ from players.charging_station import ChargingStation
 from players.data_center import DataCenter
 from players.smart_building import SmartBuilding
 from players.solar_farm import SolarFarm
+from players.solar_farm_2 import SolarFarm2
+
 
 
 class Community:
@@ -19,7 +21,8 @@ class Community:
 		self.players = {"charging_station": ChargingStation(path_to_data_folder), 
 			"data_center": DataCenter(path_to_data_folder), 
 			"smart_building": SmartBuilding(path_to_data_folder),
-			"solar_farm": SolarFarm(path_to_data_folder)}
+			"solar_farm": SolarFarm(path_to_data_folder),
+			"solar_farm_2": SolarFarm2(path_to_data_folder)}
 
 		self.initialize_prices()
 		self.initialize_heat_transactions()
@@ -77,14 +80,16 @@ class Community:
 
 	def simulate(self, path_to_save_folder, n=1000):
 
-		loads = numpy.zeros((4, n, 48))
-		bills = numpy.zeros((4, n, 48))
-		stocks = numpy.zeros((3, n, 49))
+		loads = numpy.zeros((5, n, 48))
+		bills = numpy.zeros((5, n, 48))
+		stocks = numpy.zeros((4, n, 49))
+		heat_transactions = numpy.zeros((2, 1, 48))
 
 		keys = {"charging_station": 0, 
 			"data_center": 1, 
 			"smart_building": 2,
-			"solar_farm": 3}
+			"solar_farm": 3,
+			"solar_farm_2": 4}
 
 		for i in range(n):
 
@@ -100,11 +105,16 @@ class Community:
 					stocks[1, i, :] = player.heat_stock
 				elif name == "solar_farm":
 					stocks[2, i, :] = player.battery_stock
+				elif name == "solar_farm_2":
+					stocks[3, i, :] = player.battery_stock
 				j += 1
 
 		numpy.save(os.path.join(path_to_save_folder, "load"), loads)
 		numpy.save(os.path.join(path_to_save_folder, "bill"), bills)
 		numpy.save(os.path.join(path_to_save_folder, "stock"), stocks)
+
+		heat_transactions = self.players["smart_building"].heat_transactions
+		numpy.save(os.path.join(path_to_save_folder, "heat_transactions"), heat_transactions)
 
 	def call_loads(self, time):
 
