@@ -25,8 +25,8 @@ class SolarFarm2:
         self.load = np.zeros(48)
         self.battery_stock = np.zeros(49)
         
-        self.information={"my_buy_price" = np.zeros(48), "grid_buy_price" = np.zeros(48),
-                          "my_sell_price" = np.zeros(48), "grid_sell_price" = np.zeros(48)}
+        self.information={"my_buy_price" : np.zeros(48), "grid_buy_price" : np.zeros(48),
+                          "my_sell_price" : np.zeros(48), "grid_sell_price" : np.zeros(48)}
 
     def flexible(self,time):
 
