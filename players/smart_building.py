@@ -27,7 +27,6 @@ class SmartBuilding:
 
         self.max_capacity_hwt=self.rho*self.V*self.c_p*(self.T_com - self.T_in) / (3600 * 1000) # kWh !
 
-        self.demand_curves=self.heat_demand()
         self.heat_transactions=np.zeros((48,2))
 
         self.scenario = {}
@@ -38,30 +37,34 @@ class SmartBuilding:
         self.information={"my_buy_price" : np.zeros(48), "grid_buy_price" : np.zeros(48),
                           "my_sell_price" : np.zeros(48), "grid_sell_price" : np.zeros(48)}
 
-    def heat_demand(self):
-        
-        demand_curves=np.zeros((48,6))
+    def heat_demand(self,time):
         
         ## to be completed by the students ##
-        for t in range(48):
-            if t<10:
-                for i in range(6):
-                    demand_curves[t][i]=0
-            if 10<=t<=20:
-                for i in range(6):
-                    demand_curves[t][i]=0.1*i
-            if 20<=t<=36:
-                for i in range(6):
-                    demand_curves[t][i]=0.06*i
-            if 36<=t<=44:
-                for i in range(6):
-                    demand_curves[t][i]=0.08*i
-            if 44<=t:
-                for i in range(6):
-                    demand_curves[t][i]=0.06*i
+        demand_curve = np.zeros(6)
+# =============================================================================
+#         
+#             if t<10:
+#                 for i in range(6):
+#                     demand_curves[t][i]=0
+#             if 10<=t<=20:
+#                 for i in range(6):
+#                     demand_curves[t][i]=0.1*i
+#             if 20<=t<=36:
+#                 for i in range(6):
+#                     demand_curves[t][i]=0.06*i
+#             if 36<=t<=44:
+#                 for i in range(6):
+#                     demand_curves[t][i]=0.08*i
+#             if 44<=t:
+#                 for i in range(6):
+#                     demand_curves[t][i]=0.06*i
+#         
+# =============================================================================
         
+        for i in range(6):
+            demand_curve[i]=0.06-(0.03/6)*i
         
-        return demand_curves
+        return demand_curve
 
 
     def flexible(self, time):
@@ -142,9 +145,9 @@ if __name__ == '__main__':
     print(path_to_data)
     smart_building = SmartBuilding(path_to_data)
 
-    if smart_building.demand_curves.shape != (48, 6):
-        raise ValueError("The size of your demand curve is {}, expected size {}".format(
-            smart_building.demand_curves.shape, (48, 6)))
+#    if smart_building.demand_curves.shape != (48, 6):
+#        raise ValueError("The size of your demand curve is {}, expected size {}".format(
+#            smart_building.demand_curves.shape, (48, 6)))
 
     smart_building.draw_random_scenario()
     smart_building.compute_load(0)
