@@ -27,7 +27,6 @@ class SmartBuilding:
 
         self.max_capacity_hwt=self.rho*self.V*self.c_p*(self.T_com - self.T_in) / (3600 * 1000) # kWh !
 
-        self.demand_curves=self.heat_demand()
         self.heat_transactions=np.zeros((48,2))
 
         self.scenario = {}
@@ -35,37 +34,48 @@ class SmartBuilding:
         self.load = np.zeros(48)
         self.heat_stock=np.zeros(49)
         self.heat_stock[0]=0.25*self.max_capacity_hwt
+        self.information={"my_buy_price" : np.zeros(48), "grid_buy_price" : np.zeros(48),
+                          "my_sell_price" : np.zeros(48), "grid_sell_price" : np.zeros(48)}
 
-    def heat_demand(self):
-        
-        demand_curves=np.zeros((48,6))
+    def heat_demand(self,time):
         
         ## to be completed by the students ##
-        for t in range(48):
-            if t<10:
-                for i in range(6):
-                    demand_curves[t][i]=0
-            if 10<=t<=20:
-                for i in range(6):
-                    demand_curves[t][i]=0.1*i
-            if 20<=t<=36:
-                for i in range(6):
-                    demand_curves[t][i]=0.06*i
-            if 36<=t<=44:
-                for i in range(6):
-                    demand_curves[t][i]=0.08*i
-            if 44<=t:
-                for i in range(6):
-                    demand_curves[t][i]=0.06*i
+        demand_curve = np.zeros(6)
+# =============================================================================
+#         
+#             if t<10:
+#                 for i in range(6):
+#                     demand_curves[t][i]=0
+#             if 10<=t<=20:
+#                 for i in range(6):
+#                     demand_curves[t][i]=0.1*i
+#             if 20<=t<=36:
+#                 for i in range(6):
+#                     demand_curves[t][i]=0.06*i
+#             if 36<=t<=44:
+#                 for i in range(6):
+#                     demand_curves[t][i]=0.08*i
+#             if 44<=t:
+#                 for i in range(6):
+#                     demand_curves[t][i]=0.06*i
+#         
+# =============================================================================
         
+        for i in range(6):
+            demand_curve[i]=0.06-(0.03/6)*i
         
-        return demand_curves
+        return demand_curve
 
 
     def flexible(self, time):
 
         hot_water_demand = self.scenario['hot_water_demand_smart-building'][time]
+        heat_stock = self.heat_stock[time]
         heat_data_center = self.heat_transactions[time, 0]
+        
+        
+        buy_price = self.information["my_buy_price"][time]
+        grid_buy_price = self.information["grid_buy_price"][time]
         
         load_heat_pump = 0
         
@@ -112,9 +122,9 @@ class SmartBuilding:
 
     def draw_random_scenario(self):
 
-        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","train_load_smart-building.csv"))
+        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_load_smart-building.csv"))
         self.scenario["load_smart-building"] = test_load_data_center[randint(self.n_data), :]
-        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","train_hot_water_demand_smart-building.csv"))
+        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_hot_water_demand_smart-building.csv"))
         self.scenario["hot_water_demand_smart-building"] = test_load_data_center[randint(self.n_data), :]
 
         self.bill = np.zeros(48)
@@ -132,11 +142,12 @@ if __name__ == '__main__':
 
     current_path = os.path.dirname(os.path.realpath(__file__))
     path_to_data = os.path.join(current_path, "..", "data")
+    print(path_to_data)
     smart_building = SmartBuilding(path_to_data)
 
-    if smart_building.demand_curves.shape != (48, 6):
-        raise ValueError("The size of your demand curve is {}, expected size {}".format(
-            smart_building.demand_curves.shape, (48, 6)))
+#    if smart_building.demand_curves.shape != (48, 6):
+#        raise ValueError("The size of your demand curve is {}, expected size {}".format(
+#            smart_building.demand_curves.shape, (48, 6)))
 
     smart_building.draw_random_scenario()
     smart_building.compute_load(0)

@@ -8,7 +8,7 @@ Some fields must be completed by students
 
 """
 
-class SolarFarm2:
+class SolarFarm:
 
     def __init__(self,path_to_data_folder):
 
@@ -25,14 +25,14 @@ class SolarFarm2:
         self.load = np.zeros(48)
         self.battery_stock = np.zeros(49)
         
-        self.information={"my_buy_price" = np.zeros(48), "grid_buy_price" = np.zeros(48),
-                          "my_sell_price" = np.zeros(48), "grid_sell_price" = np.zeros(48)}
+        self.information={"my_buy_price" : np.zeros(48), "grid_buy_price" : np.zeros(48),
+                          "my_sell_price" : np.zeros(48), "grid_sell_price" : np.zeros(48)}
 
     def flexible(self,time):
 
         load_battery = 0
-        stock = self.battery_stock[time-1]
-        solar_power = self.scenario[time]
+        stock = self.battery_stock[time]
+        solar_power = self.scenario["load_solar_farm"][time]
         if (time<3):
             load_battery = 0
 

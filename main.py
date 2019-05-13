@@ -25,7 +25,7 @@ class Community:
 			"solar_farm_2": SolarFarm2(path_to_data_folder)}
 
 		self.initialize_prices()
-		self.initialize_heat_transactions()
+
 
 	def initialize_prices(self):
 
@@ -33,39 +33,70 @@ class Community:
 		self.prices = {"internal":prices[0, :], "external_purchase":prices[1, :], 
 			"external_sale":prices[2, :]}
 
-	def initialize_heat_transactions(self):
+	def compute_heat_transactions(self,t):
 
-		q_dc = self.players["data_center"].supply_curves
-		q_sb = self.players["smart_building"].demand_curves
+		q_dc =self.players["data_center"].heat_supply(t)
+		q_sb =self.players["smart_building"].heat_demand(t)
 
-		for t in range(48):
-			q = 0
-			while q_sb[t,q] >= q_dc[t,q]:
+		q = 1
+
+		if q_sb[0] >= q_dc[0]:
+
+			while q_sb[q] >= q_dc[q]:
+
 				q+=1
+
+				if q == 6:
+
+					break
+
+		else:
+
+			while q_sb[q] <= q_dc[q]:
+
+				q+=1
+
 				if q == 6:
 					break
 
-			if q == 6: #no equilibrium
+		if q == 6:
 
-				eq = [0,0]
+			eq = [0,0] #curves do not intersect
 
-			else:
+			if q_sb[5]>=q_dc[5]:#we check if sb price is over dc price
 
-				sb1, sb2 = q_sb[t,q-1], q_sb[t,q]
-				dc1, dc2 = q_dc[t,q-1], q_dc[t,q]
+				qeq=min(10,self.players["smart_building"].max_capacity_hwt-self.players["smart_building"].heat_stock[time])
 
-				A = (sb2-sb1) / 2 #dy/dx
-				B = sb1-A*(q-1)*2
-				C = (dc2-dc1) / 2 #dy/dx
-				D = dc1-C*(q-1)*2
+				def f_sb(x):
 
-				qeq = (D-B)/(A-C)
-				peq = A*qeq+B
+					indice_last_q=floor(qeq/2)
+					alpha= (x-floor(qeq))/2
+					return q_sb[ind_last_q]*(1-alpha)+q_sb[ind_last_q+1]*alpha
 
-				eq = [qeq,peq]
+				def f_dc(x):
 
-			self.players["data_center"].heat_transactions[t] = eq
-			self.players["smart_building"].heat_transactions[t] = eq
+					indice_last_q=floor(qeq/2)
+					t= (x-floor(qeq))/2
+					return q_dc[ind_last_q]*(1-alpha)+q_dc[ind_last_q+1]*alpha
+
+				peq= (f_sb(qeq)+f_dc(qeq))/2
+
+		else:
+			sb1, sb2 = q_sb[q-1], q_sb[q]
+			dc1, dc2 = q_dc[q-1], q_dc[q]
+
+			A = (sb2-sb1) / 2 #dy/dx
+			B = sb1-A*(q-1)*2
+			C = (dc2-dc1) / 2 #dy/dx
+			D = dc1-C*(q-1)*2
+
+			qeq = (D-B)/(A-C)
+			peq = A*qeq+B
+
+			eq = [qeq,peq]
+
+		self.players["data_center"].heat_transactions[t] = eq
+		self.players["smart_building"].heat_transactions[t] = eq
 
 	def play(self):
 
@@ -73,7 +104,7 @@ class Community:
 			player.draw_random_scenario()
 
 		for t in range(self.horizon):
-
+			self.compute_heat_transactions(t)
 			load, demand, supply = self.call_loads(t)
 			self.compute_electricity_bills(t, load, demand, supply)
 			self.compute_heat_bills(t)
@@ -92,7 +123,7 @@ class Community:
 			"solar_farm_2": 4}
 
 		for i in range(n):
-
+            
 			self.play()
 
 			for name, player in self.players.items():
