@@ -65,18 +65,18 @@ class Community:
 
 			if q_sb[5]>=q_dc[5]:#we check if sb price is over dc price
 
-				qeq=min(10,self.players["smart_building"].max_capacity_hwt-self.players["smart_building"].heat_stock[time])
+				qeq=min(10,self.players["smart_building"].max_capacity_hwt-self.players["smart_building"].heat_stock[t])
 
 				def f_sb(x):
 
-					indice_last_q=floor(qeq/2)
-					alpha= (x-floor(qeq))/2
+					ind_last_q=int((qeq/2)-0.000001)
+					alpha= (x-int(qeq))/2
 					return q_sb[ind_last_q]*(1-alpha)+q_sb[ind_last_q+1]*alpha
 
 				def f_dc(x):
 
-					indice_last_q=floor(qeq/2)
-					t= (x-floor(qeq))/2
+					ind_last_q=int((qeq/2)-0.000001)
+					alpha= (x-int(qeq))/2
 					return q_dc[ind_last_q]*(1-alpha)+q_dc[ind_last_q+1]*alpha
 
 				peq= (f_sb(qeq)+f_dc(qeq))/2
@@ -131,7 +131,7 @@ class Community:
 				loads[j, i, :] = player.load
 				bills[j, i, :] = player.bill
 				if name == "charging_station":
-					stocks[0, i, :] = player.battery_stock
+					stocks[0, i, :] = player.battery_stock["slow"]+player.battery_stock["fast"]
 				elif name == "smart_building":
 					stocks[1, i, :] = player.heat_stock
 				elif name == "solar_farm":
