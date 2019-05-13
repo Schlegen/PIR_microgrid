@@ -149,7 +149,7 @@ class Community:
 			if load >= 0:
 				player.bill[time] += purchase * load / demand
 			else:
-				player.bill[time] -= sale * load / supply
+				player.bill[time] += sale * load / supply
 
 	def compute_heat_bills(self, time):
 
