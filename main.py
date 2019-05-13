@@ -35,14 +35,14 @@ class Community:
 
 	def compute_heat_transactions(self,t):
 
-		q_dc = self.players["data_center"].supply_curves
-		q_sb = self.players["smart_building"].demand_curves
+		q_dc =self.players["data_center"].heat_supply(t)
+		q_sb =self.players["smart_building"].heat_demand(t)
 
 		q = 1
 
-		if q_sb[t,0] >= q_dc[t,0]:
+		if q_sb[0] >= q_dc[0]:
 
-			while q_sb[t,q] >= q_dc[t,q]:
+			while q_sb[q] >= q_dc[q]:
 
 				q+=1
 
@@ -52,7 +52,7 @@ class Community:
 
 		else:
 
-			while q_sb[t,q] <= q_dc[t,q]:
+			while q_sb[q] <= q_dc[q]:
 
 				q+=1
 
@@ -63,7 +63,7 @@ class Community:
 
 			eq = [0,0] #curves do not intersect
 
-			if q_sb[t,5]>=q_dc[t,5]:#we check if sb price is over dc price
+			if q_sb[5]>=q_dc[5]:#we check if sb price is over dc price
 
 				qeq=min(10,self.players["smart_building"].max_capacity_hwt-self.players["smart_building"].heat_stock[time])
 
@@ -82,8 +82,8 @@ class Community:
 				peq= (f_sb(qeq)+f_dc(qeq))/2
 
 		else:
-			sb1, sb2 = q_sb[t,q-1], q_sb[t,q]
-			dc1, dc2 = q_dc[t,q-1], q_dc[t,q]
+			sb1, sb2 = q_sb[q-1], q_sb[q]
+			dc1, dc2 = q_dc[q-1], q_dc[q]
 
 			A = (sb2-sb1) / 2 #dy/dx
 			B = sb1-A*(q-1)*2
