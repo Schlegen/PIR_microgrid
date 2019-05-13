@@ -35,6 +35,8 @@ class SmartBuilding:
         self.load = np.zeros(48)
         self.heat_stock=np.zeros(49)
         self.heat_stock[0]=0.25*self.max_capacity_hwt
+        self.information={"my_buy_price" : np.zeros(48), "grid_buy_price" : np.zeros(48),
+                          "my_sell_price" : np.zeros(48), "grid_sell_price" : np.zeros(48)}
 
     def heat_demand(self):
         
@@ -65,7 +67,12 @@ class SmartBuilding:
     def flexible(self, time):
 
         hot_water_demand = self.scenario['hot_water_demand_smart-building'][time]
+        heat_stock = self.heat_stock[time]
         heat_data_center = self.heat_transactions[time, 0]
+        
+        
+        buy_price = self.information["my_buy_price"][time]
+        grid_buy_price = self.information["grid_buy_price"][time]
         
         load_heat_pump = 0
         
@@ -112,9 +119,9 @@ class SmartBuilding:
 
     def draw_random_scenario(self):
 
-        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","train_load_smart-building.csv"))
+        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_load_smart-building.csv"))
         self.scenario["load_smart-building"] = test_load_data_center[randint(self.n_data), :]
-        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","train_hot_water_demand_smart-building.csv"))
+        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_hot_water_demand_smart-building.csv"))
         self.scenario["hot_water_demand_smart-building"] = test_load_data_center[randint(self.n_data), :]
 
         self.bill = np.zeros(48)
