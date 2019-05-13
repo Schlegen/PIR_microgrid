@@ -33,7 +33,15 @@ class ChargingStation:
 		grid_buy_price = self.information["grid_buy_price"][t]
 		grid_sell_price = self.information["my_sell_price"][t]
 		
+		pmax = self.scenario["load_charging_station_capacity"][1,time]
+		soc = self.scenario["load_charging_station_capacity"][2,time]
 		## to be modified
+		if time<12:
+			load_battery = pmax
+		elif time<18 :
+			load_battery = -pmax
+		if time> 30 :
+			load_battery = -soc
 			
 		return load_battery
 
