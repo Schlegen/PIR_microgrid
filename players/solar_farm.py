@@ -8,7 +8,7 @@ Some fields must be completed by students
 
 """
 
-class SolarFarm:
+class SolarFarm2:
 
     def __init__(self,path_to_data_folder):
 
@@ -25,27 +25,34 @@ class SolarFarm:
         self.load = np.zeros(48)
         self.battery_stock = np.zeros(49)
         
+        self.information={"my_buy_price" = np.zeros(48), "grid_buy_price" = np.zeros(48),
+                          "my_sell_price" = np.zeros(48), "grid_sell_price" = np.zeros(48)}
 
     def flexible(self,time):
 
         load_battery = 0
-        
-        
+        stock = self.battery_stock[time-1]
+        solar_power = self.scenario[time]
+        if (time<3):
+            load_battery = 0
 
-        if time < 12:
-            load_battery = 34
+        if (time > 2 and time < 12):
+            load_battery = 10
+    
+        if (time == 12):
+                load_battery = 20
+    
+        if (time > 12 and time < 17):
+                load_battery =- 25
 
-        if (time >11 and time < 26):
-            load_battery = -34
+        if (time > 16 and time < 39):
+            load_battery = 20
+
+        if (time > 38 and time < 45):
+            load_battery =- 20
     
-        if time > 29 and time < 38:
-                load_battery = 65
-    
-        if (time > 37 and time < 42):
-                load_battery = -50
-    
-        if (time > 41) :
-                load_battery = -12
+        if (time > 44 and time < 48):
+            load_battery = -20
 
         return load_battery
 
@@ -95,7 +102,7 @@ if __name__ == '__main__':
 
     current_path = os.path.dirname(os.path.realpath(__file__))
     path_to_data = os.path.join(current_path, "..", "data")
-    solar_farm = SolarFarm(path_to_data)
+    solar_farm = SolarFarm2(path_to_data)
 
     solar_farm.draw_random_scenario()
     solar_farm.compute_load(0)
