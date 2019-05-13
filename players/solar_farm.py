@@ -8,7 +8,7 @@ Some fields must be completed by students
 
 """
 
-class SolarFarm2:
+class SolarFarm:
 
     def __init__(self,path_to_data_folder):
 
@@ -31,8 +31,8 @@ class SolarFarm2:
     def flexible(self,time):
 
         load_battery = 0
-        stock = self.battery_stock[time-1]
-        solar_power = self.scenario[time]
+        stock = self.battery_stock[time]
+        solar_power = self.scenario["load_solar_farm"][time]
         if (time<3):
             load_battery = 0
 
