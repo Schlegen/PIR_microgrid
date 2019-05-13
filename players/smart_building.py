@@ -119,9 +119,9 @@ class SmartBuilding:
 
     def draw_random_scenario(self):
 
-        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_load_smart-building.csv"))
+        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","train_load_smart-building.csv"))
         self.scenario["load_smart-building"] = test_load_data_center[randint(self.n_data), :]
-        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","test_hot_water_demand_smart-building.csv"))
+        test_load_data_center = np.loadtxt(os.path.join(self.path_to_data_folder, "smart-building","train_hot_water_demand_smart-building.csv"))
         self.scenario["hot_water_demand_smart-building"] = test_load_data_center[randint(self.n_data), :]
 
         self.bill = np.zeros(48)
@@ -139,6 +139,7 @@ if __name__ == '__main__':
 
     current_path = os.path.dirname(os.path.realpath(__file__))
     path_to_data = os.path.join(current_path, "..", "data")
+    print(path_to_data)
     smart_building = SmartBuilding(path_to_data)
 
     if smart_building.demand_curves.shape != (48, 6):
