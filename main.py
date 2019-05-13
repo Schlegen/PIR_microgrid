@@ -71,13 +71,13 @@ class Community:
 
 					indice_last_q=floor(qeq/2)
 					alpha= (x-floor(qeq))/2
-					return q_sb[t,ind_last_q]*(1-alpha)+q_sb[t,ind_last_q+1]*alpha
+					return q_sb[ind_last_q]*(1-alpha)+q_sb[ind_last_q+1]*alpha
 
 				def f_dc(x):
 
 					indice_last_q=floor(qeq/2)
 					t= (x-floor(qeq))/2
-					return q_dc[t,ind_last_q]*(1-alpha)+q_dc[t,ind_last_q+1]*alpha
+					return q_dc[ind_last_q]*(1-alpha)+q_dc[ind_last_q+1]*alpha
 
 				peq= (f_sb(qeq)+f_dc(qeq))/2
 
