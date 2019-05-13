@@ -21,51 +21,72 @@ class ChargingStation:
 		self.scenario = {}
 		self.bill = np.zeros(48)
 		self.load = np.zeros(48)
-		self.battery_stock = np.zeros(49)
+		self.battery_stock = {"slow" : np.zeros(48), "fast" : np.zeros(48)}
+		
+		self.information={"my_buy_price" : np.zeros(48), "grid_buy_price" : np.zeros(48),
+                          "my_sell_price" : np.zeros(48), "grid_sell_price" : np.zeros(48)}
 
 	def flexible(self,time):
-		load_battery = 0
+		load_battery = {"slow" : 0, "fast" : 0}
+		my_buy_price = self.information["my_buy_price"][t]
+		my_sell_price = self.information["my_sell_price"][t]
+		grid_buy_price = self.information["grid_buy_price"][t]
+		grid_sell_price = self.information["my_sell_price"][t]
 		
-		soc = self.scenario["load_charging_station_capacity"][2,time]
-		load_battery = - soc
-		
+		## to be modified
+			
 		return load_battery
 
-	def not_flexible(self,time):
-
-		l_nf = self.scenario["load_charging_station"][time]
-		
-		return l_nf
 
 	def update_batterie_stock(self, time, load_battery):
-		
 		
 		cmax = self.scenario["load_charging_station_capacity"][0,time] # Available Capacity   
 		pmax = self.scenario["load_charging_station_capacity"][1,time] # Available Power
 		soc = self.scenario["load_charging_station_capacity"][2,time]  # State Of Charge of the vehicles
+		
+		nb_slow = int((pmax%22)/3)   # nombre de voiture à 3kW dispo 
+		nb_fast = cmax/40 - nb.slow # nombre de voiture à 22kW dispo 
+		nb={"slow" : nb_slow, "fast" : nb_fast}
+		pmax = {"slow" : 3*nb_slow, "fast" : 22*nb_fast}
+		cmax = {"slow" : 40*nb_slow, "fast" : 40*nb_fast}
+		
+		for speed in ["slow","fast"] :
+			if abs(load_battery[speed]) > pmax[speed] :
+				load_battery[speed] = pmax[speed]*np.sign(load_battery[speed])
 
-		if abs(load_battery) > pmax:
-			load_battery = pmax*np.sign(load_battery)
+			new_stock = { "slow" : self.battery_stock[time] + (self.efficiency*max(0,load_battery["slow"])-min(0,load_battery["slow"])/self.efficiency)*self.dt + soc, "fast" : self.battery_stock[time] + (self.efficiency*max(0,load_battery["fast"])-min(0,load_battery["fast"])/self.efficiency)*self.dt }
 
-		new_stock = self.battery_stock[time] + self.efficiency*load_battery*self.dt + soc
+		for speed in ["slow","fast"] :
+			if new_stock[speed] < 0:
+				load_battery[speed] = min(pmax[speed], - (self.battery_stock[speed][time] + soc)*self.efficiency/self.dt)
+				new_stock[speed] = self.battery_stock[time] + (load_battery[speed]/self.efficiency)*self.dt + soc
+	
+			elif new_stock[speed] > cmax[speed]:
+				load_battery[speed] = max(pmax[speed],(cmax[speed]*self.dt - self.battery_stock[speed][time] - soc) * self.efficiency/self.dt)
+				new_stock[speed] = cmax[speed]
 
-		if new_stock < 0:
-			load_battery = - (self.battery_stock[time] + soc) / (self.efficiency*self.dt)
-			new_stock = 0
-
-		elif new_stock > cmax:
-			load_battery = (cmax - self.battery_stock[time] - soc) / (self.efficiency*self.dt)
-			new_stock = cmax
-
-		self.battery_stock[time+1] = new_stock
-
+		if time>12 and time<18:
+			speed = "slow"
+			if nb[speed]*10 > new_stock[speed] :
+					self.bill[time] += 1
+			
+			speed="fast"
+			if nb[speed]*10 > new_stock[speed] :
+				load_battery[speed]=nb[speed]*22
+				new_stock[speed]+= 22*nb[speed]*self.dt
+		
+		for speed in ["slow","fast"] :
+			self.battery_stock[speed][time+1] = new_stock[speed]
+		
 		return load_battery
+		
+
 
 	def compute_load(self,time):
 
 		load_battery = self.flexible(time)
-
-		self.load[time] = self.not_flexible(time) + self.update_batterie_stock(time, load_battery)
+		load = self.update_batterie_stock(time, load_battery)
+		self.load[time] = load["slow"] + load[fast]
 
 
 	def draw_random_scenario(self):
