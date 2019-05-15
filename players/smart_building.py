@@ -27,15 +27,14 @@ class SmartBuilding:
 
         self.max_capacity_hwt=self.rho*self.V*self.c_p*(self.T_com - self.T_in) / (3600 * 1000) # kWh !
 
-        self.heat_transactions=np.zeros((48,2))
-
         self.scenario = {}
         self.bill = np.zeros(48)
         self.load = np.zeros(48)
+        self.heat_transactions = np.zeros((48,2))
         self.heat_stock=np.zeros(49)
         self.heat_stock[0]=0.25*self.max_capacity_hwt
-        self.information={"my_buy_price" : np.zeros(48), "grid_buy_price" : np.zeros(48),
-                          "my_sell_price" : np.zeros(48), "grid_sell_price" : np.zeros(48)}
+        self.information={"my_buy_price" : np.zeros(49), "grid_buy_price" : np.zeros(49),
+                          "my_sell_price" : np.zeros(49), "grid_sell_price" : np.zeros(49)}
 
     def heat_demand(self,time):
         
@@ -129,6 +128,7 @@ class SmartBuilding:
 
         self.bill = np.zeros(48)
         self.load = np.zeros(48)
+        self.heat_transactions = np.zeros((48,2))
         self.heat_stock=np.zeros(49)
         self.heat_stock[0]=0.25*self.max_capacity_hwt
 
@@ -142,14 +142,10 @@ if __name__ == '__main__':
 
     current_path = os.path.dirname(os.path.realpath(__file__))
     path_to_data = os.path.join(current_path, "..", "data")
-    print(path_to_data)
     smart_building = SmartBuilding(path_to_data)
-
-#    if smart_building.demand_curves.shape != (48, 6):
-#        raise ValueError("The size of your demand curve is {}, expected size {}".format(
-#            smart_building.demand_curves.shape, (48, 6)))
 
     smart_building.draw_random_scenario()
     smart_building.compute_load(0)
+    smart_building.heat_demand(0)
 
     print("Test passed, ready to submit !")

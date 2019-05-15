@@ -21,17 +21,16 @@ class DataCenter:
         self.COP = self.EER + 1
         self.COP_HP=0.4*(273+60)/(60-35)
 
-        self.heat_transactions = np.zeros((48,2))
-
         self.scenario = {}
         self.bill = np.zeros(48)
         self.load = np.zeros(48)
+        self.heat_transactions = np.zeros((48,2))
 
-        self.information={"my_buy_price" : np.zeros(48), "grid_buy_price" : np.zeros(48),
-                          "my_sell_price" : np.zeros(48), "grid_sell_price" : np.zeros(48)}
+        self.information={"my_buy_price" : np.zeros(49), "grid_buy_price" : np.zeros(49),
+                          "my_sell_price" : np.zeros(49), "grid_sell_price" : np.zeros(49)}
                 
     def heat_supply(self,t):
-        
+
         supply_curves = np.zeros(6)
         mini,maxi=0,0
         if (t>=0 and t<12) or t>=44:
@@ -71,6 +70,7 @@ class DataCenter:
 
         self.bill = np.zeros(48)
         self.load = np.zeros(48)
+        self.heat_transactions = np.zeros((48,2))
 
 
 """
@@ -80,12 +80,11 @@ Test your code before submition
 
 if __name__ == '__main__':
 
-    current_path = os.path.realpath(__file__)
+    current_path = os.path.dirname(os.path.realpath(__file__))
     path_to_data = os.path.join(current_path, "..", "data")
     data_center = DataCenter(path_to_data)
 
-#    if data_center.supply_curves.shape != (48, 6):
-#        raise ValueError("The size of your supply curve is {}, expected size {}".format(
-#            data_center.supply_curves.shape, (48, 6)))
+    data_center.draw_random_scenario()
+    data_center.heat_supply(0)
 
     print("Test passed, ready to submit !")

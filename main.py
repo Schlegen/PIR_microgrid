@@ -114,7 +114,11 @@ class Community:
 		loads = numpy.zeros((5, n, 48))
 		bills = numpy.zeros((5, n, 48))
 		stocks = numpy.zeros((4, n, 49))
-		heat_transactions = numpy.zeros((2, 1, 48))
+		heat_transactions = numpy.zeros((2, n, 48))
+
+		buy_prices = numpy.zeros((5, n, 48))
+		sell_prices = numpy.zeros((5, n, 48))
+		grid_prices = numpy.zeros((2, n, 48))
 
 		keys = {"charging_station": 0, 
 			"data_center": 1, 
@@ -130,6 +134,8 @@ class Community:
 				j = keys[name]
 				loads[j, i, :] = player.load
 				bills[j, i, :] = player.bill
+				buy_prices[j, i, :] = player.information["my_buy_price"][1:]
+				sell_prices[j, i, :] = player.information["my_sell_price"][1:]
 				if name == "charging_station":
 					stocks[0, i, :] = player.battery_stock["slow"]+player.battery_stock["fast"]
 				elif name == "smart_building":
@@ -140,12 +146,19 @@ class Community:
 					stocks[3, i, :] = player.battery_stock
 				j += 1
 
+			heat_transactions[:, i, :] = self.players["smart_building"].heat_transactions.T
+			grid_buy_price = self.players["smart_building"].information["grid_buy_price"][1:].reshape((-1, 1))
+			grid_sell_price = self.players["smart_building"].information["grid_sell_price"][1:].reshape((-1, 1))
+			grid_price = numpy.concatenate((grid_buy_price, grid_sell_price), axis=1)
+			grid_prices[:, i, :] = grid_price.T
+
 		numpy.save(os.path.join(path_to_save_folder, "load"), loads)
 		numpy.save(os.path.join(path_to_save_folder, "bill"), bills)
 		numpy.save(os.path.join(path_to_save_folder, "stock"), stocks)
-
-		heat_transactions = self.players["smart_building"].heat_transactions
 		numpy.save(os.path.join(path_to_save_folder, "heat_transactions"), heat_transactions)
+		numpy.save(os.path.join(path_to_save_folder, "buy_prices"), buy_prices)
+		numpy.save(os.path.join(path_to_save_folder, "sell_prices"), sell_prices)
+		numpy.save(os.path.join(path_to_save_folder, "grid_prices"), grid_prices)
 
 	def call_loads(self, time):
 
@@ -175,12 +188,23 @@ class Community:
 
 		for name, player in self.players.items():
 
+			if demand != 0:
+				player.information["grid_buy_price"][time+1] = purchase / (demand*self.dt)
+			if supply != 0:
+				player.information["grid_sell_price"][time+1] = sale / (supply*self.dt)
+
 			load = player.load[time]
+			if load == 0:
+				continue
 
 			if load >= 0:
-				player.bill[time] += purchase * load / demand
+				electric_bill = purchase * load / demand
+				player.bill[time] += electric_bill
+				player.information["my_buy_price"][time+1] = electric_bill / (load*self.dt)
 			else:
-				player.bill[time] += sale * load / supply
+				electric_bill = sale * load / supply
+				player.bill[time] += electric_bill
+				player.information["my_sell_price"][time+1] = electric_bill / (load*self.dt)
 
 	def compute_heat_bills(self, time):
 
