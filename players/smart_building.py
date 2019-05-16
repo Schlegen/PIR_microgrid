@@ -50,10 +50,10 @@ class SmartBuilding:
             Watt_max_achat = hwt_cap - heat_stock
             if Watt_max_achat >= 10:
                 for i in range(6):
-                    demand_curve[i]=0.05
+                    demand_curve[i]=0.08/1.48 - i*0.1/2.66
             else:
                 for i in range(Watt_max_achat//2):
-                    demand_curve[i]=0.05
+                    demand_curve[i]=0.08/1.48 - 0.1/2.66
                 for i in range((Watt_max_achat//2)+1,6,1):
                     demand_curve[i]=0
         else:
