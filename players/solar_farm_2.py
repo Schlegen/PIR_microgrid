@@ -34,26 +34,27 @@ class SolarFarm2:
         stock = self.battery_stock[time]
         solar_power = self.scenario["load_solar_farm"][time]
 
-        if (time<3):
-            load_battery = 0
-
-        if (time > 2 and time < 12):
-            load_battery = 10
-    
-        if (time == 12):
-                load_battery = 20
-    
-        if (time > 12 and time < 17):
-                load_battery =- 25
-
-        if (time > 16 and time < 39):
+        if (time<13):
             load_battery = 20
 
-        if (time > 38 and time < 45):
-            load_battery =- 20
+        if (time > 12 and time < 17):
+            load_battery = -100/3
     
-        if (time > 44 and time < 48):
-            load_battery = -20
+        if (time >16 and time < 21):
+            if self.information["grid_buy_price"][time] > 0.08:    
+                load_battery= -50/3
+    
+        if (time > 20 and time < 39):
+            if self.information["grid_buy_price"][time] > 0.08:
+                load_battery = -10
+            else:
+                load_battery = 30
+
+        if (time > 38 and time < 45):
+            load_battery = -2.5*self.battery_stock[39]/6
+
+        if (time > 44):
+            load_battery =- 50
 
         return load_battery
 
