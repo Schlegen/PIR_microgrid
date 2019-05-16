@@ -58,11 +58,24 @@ class ChargingStation:
 		## to be modified
 		for speed in ["slow","fast"]:
 			if time<12:
+				if self.information["my_buy_price"][time]< 0.07 :
+					load_battery[speed] = p_max[speed]
+		
+		
+		while time<18 and self.battery_stock["fast"][time]>11*self.nb_fast:
+			load_battery["fast"] = -p_max["fast"]
+		
+		while time<18 and self.battery_stock["slow"][time]>11*self.nb_fast:
+			load_battery["fast"] = -p_max["slow"]
+			
+		if time> 36 and time<40 :
+			for speed in ["slow","fast"]:
 				load_battery[speed] = p_max[speed]
-			elif time<18 :
+		
+		if time > 40:
+			for speed in ["slow","fast"]:
 				load_battery[speed] = -p_max[speed]
-		if time> 30 :
-			load_battery["slow"]= -soc
+		
 
 		
 			
