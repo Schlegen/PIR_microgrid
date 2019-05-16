@@ -8,6 +8,8 @@ from players.smart_building import SmartBuilding
 from players.solar_farm import SolarFarm
 from players.solar_farm_2 import SolarFarm2
 
+import pdb
+
 
 
 class Community:
@@ -212,8 +214,13 @@ class Community:
 		heat = eq[0]
 		price = eq[1]
 
-		self.players["data_center"].bill -= heat*price
-		self.players["smart_building"].bill += heat*price
+		if time == 18:
+			pdb.set_trace()
+
+		self.players["data_center"].bill[time] -= heat*price
+		self.players["smart_building"].bill[time] += heat*price
+
+		
 
 
 if __name__ == '__main__':
@@ -222,7 +229,7 @@ if __name__ == '__main__':
 
 	parser.add_argument('-d', '--data', type=str, required=True, help='folder hosting data')
 	parser.add_argument('-s', '--save', type=str, required=True, help='folder to save results')
-	parser.add_argument('--simulations', type=int, default=100, help='number of simulations')
+	parser.add_argument('--simulations', type=int, default=1000, help='number of simulations')
 
 	opt = parser.parse_args()
 
