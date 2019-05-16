@@ -40,28 +40,25 @@ class SmartBuilding:
         
         ## to be completed by the students ##
         demand_curve = np.zeros(6)
-# =============================================================================
-#         
-#             if t<10:
-#                 for i in range(6):
-#                     demand_curves[t][i]=0
-#             if 10<=t<=20:
-#                 for i in range(6):
-#                     demand_curves[t][i]=0.1*i
-#             if 20<=t<=36:
-#                 for i in range(6):
-#                     demand_curves[t][i]=0.06*i
-#             if 36<=t<=44:
-#                 for i in range(6):
-#                     demand_curves[t][i]=0.08*i
-#             if 44<=t:
-#                 for i in range(6):
-#                     demand_curves[t][i]=0.06*i
-#         
-# =============================================================================
+        heat_stock = self.heat_stock[time]
+        hwt_cap  = self.max_capacity_hwt
         
-        for i in range(6):
-            demand_curve[i]=0.06-(0.03/6)*i
+        if time < 18:
+            for i in range(6):
+                demand_curve[i]=0
+        if time>=18 and time <36:
+            Watt_max_achat = hwt_cap - heat_stock
+            if Watt_max_achat >= 10:
+                for i in range(6):
+                    demand_curve[i]=0.05
+            else:
+                for i in range(Watt_max_achat//2):
+                    demand_curve[i]=0.05
+                for i in range((Watt_max_achat//2)+1,6,1):
+                    demand_curve[i]=0
+        else:
+            for i in range(6):
+                demand_curve[i]=0
         
         return demand_curve
 
@@ -78,13 +75,23 @@ class SmartBuilding:
         
         load_heat_pump = 0
         
+        
         ## to be completed by the students ##
         if 4<=time and time<=6: 
-            load_heat_pump = 4
+            load_heat_pump = 7
+            if heat_stock+heat_data_center > self.max_capacity_hwt-7:
+                 load_heat_pump=self.max_capacity_htw-heat_stock-heat_data_center
+
         if 9<=time and time<=11:
-            load_heat_pump = 2
-        if 24<=time and time<=36:
             load_heat_pump = 1
+            if buy_price>=0.08:
+                load_heat_pump = 0
+            if heat_stock==heat_data_center >= self.max_capacity_hwt:
+                load_heat_pump=0
+        if time>=12:
+            load_heat_pump=0
+           
+        
         
 
         return load_heat_pump
