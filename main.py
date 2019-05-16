@@ -214,8 +214,8 @@ class Community:
 		heat = eq[0]
 		price = eq[1]
 
-		if time == 18:
-			pdb.set_trace()
+		#if time == 18:
+		#pdb.set_trace()
 
 		self.players["data_center"].bill[time] -= heat*price
 		self.players["smart_building"].bill[time] += heat*price
