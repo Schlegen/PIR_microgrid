@@ -34,16 +34,22 @@ class ChargingStation:
 		pmax = self.scenario["load_charging_station_capacity"][1,time] # Available Power
 		soc = self.scenario["load_charging_station_capacity"][2,time]  # State Of Charge of the vehicles
 
-		delta_pmax = pmax - self.scenario["load_charging_station_capacity"][1,time-1]
-
-		if delta_pmax == -22:
-			self.nb_fast -= 1
-		elif delta_pmax == 22:
-			self.nb_fast += 1
-		elif delta_pmax == -3:
-			self.nb_slow -= 1
-		elif delta_pmax == 3:
-			self.nb_slow += 1
+		
+		for c in cmax: #Problème de donnée dans le tableau des capacités 
+			c*=4
+		
+		self.nb_slow = int((0%22)/3)
+		self.nb_fast = cmax/40 - self.nb_slow
+		
+		#delta_pmax = pmax - self.scenario["load_charging_station_capacity"][1,time-1]
+		# if delta_pmax == -22:
+		# 	self.nb_fast -= 1
+		# elif delta_pmax == 22:
+		# 	self.nb_fast += 1
+		# elif delta_pmax == -3:
+		# 	self.nb_slow -= 1
+		# elif delta_pmax == 3:
+		# 	self.nb_slow += 1
 
 		p_max = {"slow" : 3*self.nb_slow, "fast" : 22*self.nb_fast}
 		c_max = {"slow" : 40*self.nb_slow, "fast" : 40*self.nb_fast}
@@ -56,16 +62,17 @@ class ChargingStation:
 
 
 		## to be modified
-		for speed in ["slow","fast"]:
-			if time<12:
-				if self.information["my_buy_price"][time]< 0.07 :
-					load_battery[speed] = p_max[speed]
 		
-		
-		while time<18 and self.battery_stock["fast"][time]>11*self.nb_fast:
+		if time<4 and  and my_buy_price < 0.07 :
+			load_battery["fast"] = 44
+
+		if time<11 and  and my_buy_price < 0.07 :
+			load_battery["slow"] = 6
+				
+		if time>12 and time<18 and self.battery_stock["fast"][time]>11*self.nb_fast:
 			load_battery["fast"] = -p_max["fast"]
 		
-		while time<18 and self.battery_stock["slow"][time]>11*self.nb_fast:
+		if time>12 and time<18 and self.battery_stock["slow"][time]>11*self.nb_fast:
 			load_battery["fast"] = -p_max["slow"]
 			
 		if time> 36 and time<40 :
@@ -75,9 +82,6 @@ class ChargingStation:
 		if time > 40:
 			for speed in ["slow","fast"]:
 				load_battery[speed] = -p_max[speed]
-		
-
-		
 			
 		return load_battery
 
