@@ -35,7 +35,7 @@ class ChargingStation:
 		soc = self.scenario["load_charging_station_capacity"][2,time]  # State Of Charge of the vehicles
 
 		
-		self.nb_slow = int((0%22)/3)
+		self.nb_slow = int((pmax%22)/3)
 		self.nb_fast = cmax/40 - self.nb_slow
 		
 
@@ -54,25 +54,20 @@ class ChargingStation:
 		load_battery["fast"] = 0
 		load_battery["slow"] = 0
 		
-		if time<4 and  my_buy_price < 0.07 :
+		if time < 3  :
 			load_battery["fast"] = 44
 
-		if time<11 and   my_buy_price < 0.07 :
+		if time < 11  :
 			load_battery["slow"] = 6
 				
-		if time>12 and time<18 and self.battery_stock["fast"][time]>11*self.nb_fast:
+		if time > 12 and time<18 and self.battery_stock["fast"][time]>(10*self.nb_fast+11):
 			load_battery["fast"] = -p_max["fast"]
 		
-		if time>12 and time<18 and self.battery_stock["slow"][time]>11*self.nb_fast:
+		if time > 12 and time<18 and self.battery_stock["slow"][time]>(10*self.nb_slow+1.5):
 			load_battery["slow"] = -p_max["slow"]
 
-		if time >12 and time<18 and self.battery_stock["fast"][time]>11*self.nb_fast:
-			load_battery["fast"] = -p_max["fast"]
-		
-		if time>12 and  time<18 and self.battery_stock["slow"][time]>11*self.nb_fast:
-			load_battery["fast"] = -p_max["slow"]
 			
-		if time> 36 and time<40 :
+		if time > 36 and time<40 :
 			for speed in ["slow","fast"]:
 				load_battery[speed] = p_max[speed]
 		
@@ -95,11 +90,11 @@ class ChargingStation:
 
 		
 		for speed in ["slow","fast"] :
-			if abs(load_battery[speed]) > p_max[speed] :
+			if abs(load_battery[speed]) >= p_max[speed] :
 				load_battery[speed] = p_max[speed]*np.sign(load_battery[speed])
 
-			new_stock = { "slow" : self.battery_stock["slow"][time] + (self.efficiency*max(0,load_battery["slow"])+min(0,load_battery["slow"])/self.efficiency)*self.dt + soc, 
-                "fast" : self.battery_stock["fast"][time] + (self.efficiency*max(0,load_battery["fast"])+min(0,load_battery["fast"])/self.efficiency)*self.dt }
+		new_stock = { "slow" : self.battery_stock["slow"][time] + (self.efficiency*max(0,load_battery["slow"])+min(0,load_battery["slow"])/self.efficiency)*self.dt + soc, 
+                      "fast" : self.battery_stock["fast"][time] + (self.efficiency*max(0,load_battery["fast"])+min(0,load_battery["fast"])/self.efficiency)*self.dt }
 
 		for speed in ["slow","fast"] :
 			if new_stock[speed] < 0:
