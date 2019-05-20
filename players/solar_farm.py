@@ -34,26 +34,34 @@ class SolarFarm:
         stock = self.battery_stock[time]
         solar_power = self.scenario["load_solar_farm"][time]
 
-        if (time<3):
-            load_battery = 0
-
-        if (time > 2 and time < 12):
-            load_battery = 10
+        if time < 12 and self.information["grid_buy_price"][time] <= 0.058:
+            load_battery = 34
+        if time < 12 and self.information["grid_buy_price"][time] > 0.058:
+            load_battery = -1/5*stock
+            
+        if (time >11 and time < 17 and self.information["grid_buy_price"][time]<= 0.09):
+            load_battery = -15
+        if (time >11 and time < 17 and self.information["grid_buy_price"][time]> 0.09):
+            load_battery = -1/5*stock
+        
+        if (time >16 and time < 26 and self.information["grid_buy_price"][time]<= 0.08):
+            load_battery = -15
+        if (time >16 and time < 26 and self.information["grid_buy_price"][time]> 0.08):
+            load_battery = -1/5*stock
     
-        if (time == 12):
-                load_battery = 20
-    
-        if (time > 12 and time < 17):
-                load_battery =- 25
-
-        if (time > 16 and time < 39):
-            load_battery = 20
-
-        if (time > 38 and time < 45):
-            load_battery =- 20
-    
-        if (time > 44 and time < 48):
-            load_battery = -20
+        if (time > 29 and time < 38 and self.information["grid_buy_price"][time]<= 0.08):
+                load_battery = 2*(100-self.battery_stock[28])/7
+        if time > 29 and time < 38 and self.information["grid_buy_price"][time]> 0.08:
+                load_battery = -1/5*stock
+        
+        
+        if (time > 37 and time < 41 and self.information["grid_buy_price"][time]<= 0.08):
+                load_battery = -50
+        if (time > 37 and time < 41 and self.information["grid_buy_price"][time]> 0.08):
+                load_battery = -1/5*stock
+        
+        if (time > 40) :
+                load_battery = -2*self.battery_stock[41]/6
 
         return load_battery
 

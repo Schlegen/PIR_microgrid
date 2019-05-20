@@ -35,9 +35,6 @@ class ChargingStation:
 		soc = self.scenario["load_charging_station_capacity"][2,time]  # State Of Charge of the vehicles
 
 		
-		for c in cmax: #Problème de donnée dans le tableau des capacités 
-			c*=4
-		
 		self.nb_slow = int((0%22)/3)
 		self.nb_fast = cmax/40 - self.nb_slow
 		
@@ -63,16 +60,23 @@ class ChargingStation:
 
 		## to be modified
 		
-		if time<4 and  and my_buy_price < 0.07 :
+
+		if time<4 and  my_buy_price < 0.07 :
 			load_battery["fast"] = 44
 
-		if time<11 and  and my_buy_price < 0.07 :
+		if time<11 and   my_buy_price < 0.07 :
 			load_battery["slow"] = 6
 				
 		if time>12 and time<18 and self.battery_stock["fast"][time]>11*self.nb_fast:
 			load_battery["fast"] = -p_max["fast"]
 		
 		if time>12 and time<18 and self.battery_stock["slow"][time]>11*self.nb_fast:
+			load_battery["slow"] = -p_max["slow"]
+
+		if time >12 and time<18 and self.battery_stock["fast"][time]>11*self.nb_fast:
+			load_battery["fast"] = -p_max["fast"]
+		
+		if time>12 and  time<18 and self.battery_stock["slow"][time]>11*self.nb_fast:
 			load_battery["fast"] = -p_max["slow"]
 			
 		if time> 36 and time<40 :
