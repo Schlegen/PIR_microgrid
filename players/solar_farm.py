@@ -36,8 +36,6 @@ class SolarFarm:
 
         if time < 12 and self.information["grid_buy_price"][time] <= 0.058:
             load_battery = 34
-        if time < 12 and self.information["grid_buy_price"][time] > 0.058:
-            load_battery = -1/5*stock
             
         if (time >11 and time < 17 and self.information["grid_buy_price"][time]<= 0.09):
             load_battery = -15
