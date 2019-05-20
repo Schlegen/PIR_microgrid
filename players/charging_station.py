@@ -38,15 +38,6 @@ class ChargingStation:
 		self.nb_slow = int((0%22)/3)
 		self.nb_fast = cmax/40 - self.nb_slow
 		
-		#delta_pmax = pmax - self.scenario["load_charging_station_capacity"][1,time-1]
-		# if delta_pmax == -22:
-		# 	self.nb_fast -= 1
-		# elif delta_pmax == 22:
-		# 	self.nb_fast += 1
-		# elif delta_pmax == -3:
-		# 	self.nb_slow -= 1
-		# elif delta_pmax == 3:
-		# 	self.nb_slow += 1
 
 		p_max = {"slow" : 3*self.nb_slow, "fast" : 22*self.nb_fast}
 		c_max = {"slow" : 40*self.nb_slow, "fast" : 40*self.nb_fast}
@@ -60,7 +51,9 @@ class ChargingStation:
 
 		## to be modified
 		
-
+		load_battery["fast"] = 0
+		load_battery["slow"] = 0
+		
 		if time<4 and  my_buy_price < 0.07 :
 			load_battery["fast"] = 44
 
