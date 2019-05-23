@@ -43,24 +43,46 @@ class SmartBuilding:
         heat_stock = self.heat_stock[time]
         hwt_cap  = self.max_capacity_hwt
         
-        Watt_max_achat = hwt_cap - heat_stock
+        objectif=0
+        
+        if time>=8 and time<=12:
+            objectif=hwt_cap
+
+        elif time>=36 and time<=39:
+            objectif=hwt_cap
+            
+        elif time==40:
+            objectif=15
+        
+        elif time==41:
+            objectif=10
+        
+        elif time==42:
+            objectif=10
+        
+        elif time>42:
+            objectif=0
+        
+        Watt_max_achat = max(objectif - heat_stock,0)
         
         if time < 12:
-            min = (0.06/2.66)
-            max = 0.057/1.48
+            minimum = (0.06/2.66)
+            maximum = 0.057/1.48
              
                     
-        if time<16 and time >=12:
-            min=0.1/2.66
-            max=0.09/1.48
+        elif time<16 and time >=12:
+            minimum=0.1/2.66
+            maximum=0.09/1.48
         
-        if time<39 and time >=16:
-            min=0.1/2.66
-            max=0.08/1.48
+        elif time<39 and time >=16:
+            minimum=0.1/2.66
+            maximum=0.08/1.48
             
             
         else:
-            min=max=0
+            minimum=0
+            maximum=0
+        
         
         if Watt_max_achat >= 10:
             for i in range(6):
@@ -100,6 +122,7 @@ class SmartBuilding:
                 load_heat_pump = 0
             if heat_stock==heat_data_center >= self.max_capacity_hwt:
                 load_heat_pump=0
+                
         if time>=12:
             load_heat_pump=0
            
