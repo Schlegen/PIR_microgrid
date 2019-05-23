@@ -34,29 +34,30 @@ class SolarFarm:
         stock = self.battery_stock[time]
         solar_power = self.scenario["load_solar_farm"][time]
 
-        if time < 12 and self.information["grid_buy_price"][time] <= 0.058:
+        if time < 12 :
             load_battery = 34
             
         if (time >11 and time < 17 and self.information["grid_buy_price"][time]<= 0.09):
             load_battery = -15
         if (time >11 and time < 17 and self.information["grid_buy_price"][time]> 0.09):
-            load_battery = -1/5*stock
+            load_battery = -max(1/5*stock,15)
         
-        if (time >16 and time < 26 and self.information["grid_buy_price"][time]<= 0.08):
+        if (time >16 and time < 23 and self.information["grid_buy_price"][time]<= 0.08):
             load_battery = -15
-        if (time >16 and time < 26 and self.information["grid_buy_price"][time]> 0.08):
-            load_battery = -1/5*stock
+        if (time >16 and time < 23 and self.information["grid_buy_price"][time]> 0.08):
+            load_battery = -max(1/5*stock,15)
+
+        if solar_power[22]<15:#kW
+            if(time > 22 and time< 30):
+                load_battery = - min(15,solar_power/2)
     
-        if (time > 29 and time < 38 and self.information["grid_buy_price"][time]<= 0.08):
+        if  time > 29 and time < 38 :
                 load_battery = 2*(100-self.battery_stock[28])/7
-        if time > 29 and time < 38 and self.information["grid_buy_price"][time]> 0.08:
-                load_battery = -1/5*stock
-        
         
         if (time > 37 and time < 41 and self.information["grid_buy_price"][time]<= 0.08):
                 load_battery = -50
         if (time > 37 and time < 41 and self.information["grid_buy_price"][time]> 0.08):
-                load_battery = -1/5*stock
+                load_battery = -max(1/5*self.battery_stock[time],15)
         
         if (time > 40) :
                 load_battery = -2*self.battery_stock[41]/6
