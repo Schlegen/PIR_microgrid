@@ -54,7 +54,7 @@ class ChargingStation:
 		load_battery["fast"] = 0
 		load_battery["slow"] = 0
 		
-		if time < 3  :
+		if time < 4  :
 			load_battery["fast"] = 44
 
 		if time < 11  :
@@ -98,11 +98,11 @@ class ChargingStation:
 
 		for speed in ["slow","fast"] :
 			if new_stock[speed] < 0:
-				load_battery[speed] = max(-p_max[speed], - (self.battery_stock[speed][time] + soc)*self.efficiency/self.dt)
-				new_stock[speed] = self.battery_stock[speed][time] + (load_battery[speed]/self.efficiency)*self.dt + soc
-	
+				load_battery[speed] = -(self.battery_stock[speed][time]  + soc)/(self.efficiency*self.dt)
+				new_stock[speed] = 0
+			
 			elif new_stock[speed] > c_max[speed]:
-				load_battery[speed] = min(p_max[speed],(c_max[speed]*self.dt - self.battery_stock[speed][time] - soc) * self.efficiency/self.dt)
+				load_battery[speed] = (c_max[speed] - self.battery_stock[speed][time] ) / (self.efficiency*self.dt)
 				new_stock[speed] = c_max[speed]
 
 		if time>12 and time<18:
@@ -117,6 +117,10 @@ class ChargingStation:
 		
 		for speed in ["slow","fast"] :
 			self.battery_stock[speed][time+1] = new_stock[speed]
+		
+		for speed in ["slow","fast"] :
+			if abs(load_battery[speed]) >= p_max[speed] :
+				load_battery[speed] = p_max[speed]*np.sign(load_battery[speed])
 		
 		return load_battery
 		
