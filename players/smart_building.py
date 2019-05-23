@@ -43,22 +43,34 @@ class SmartBuilding:
         heat_stock = self.heat_stock[time]
         hwt_cap  = self.max_capacity_hwt
         
-        if time < 18:
-            for i in range(6):
-                demand_curve[i]=0
-        if time>=18 and time <36:
-            Watt_max_achat = hwt_cap - heat_stock
-            if Watt_max_achat >= 10:
-                for i in range(6):
-                    demand_curve[i]=0.08/1.48 - i*0.1/2.66
-            else:
-                for i in range(Watt_max_achat//2):
-                    demand_curve[i]=0.08/1.48 - 0.1/2.66
-                for i in range((Watt_max_achat//2)+1,6,1):
-                    demand_curve[i]=0
+        Watt_max_achat = hwt_cap - heat_stock
+        
+        if time < 12:
+            min = (0.06/2.66)
+            max = 0.057/1.48
+             
+                    
+        if time<16 and time >=12:
+            min=0.1/2.66
+            max=0.09/1.48
+        
+        if time<39 and time >=16:
+            min=0.1/2.66
+            max=0.08/1.48
+            
+            
         else:
+            min=max=0
+        
+        if Watt_max_achat >= 10:
             for i in range(6):
+                    demand_curve[i]=max - i * (max -min)/5
+        else:
+            for i in range(int(Watt_max_achat//2)):
+                demand_curve[i]=max - i * (max -min)/5
+            for i in range((int(Watt_max_achat//2))+1,6,1):
                 demand_curve[i]=0
+        
         
         return demand_curve
 
