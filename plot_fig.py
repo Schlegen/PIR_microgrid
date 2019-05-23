@@ -3,7 +3,6 @@ import numpy as np
 import random as rd
 
 T=48
-N=100
 
 ### Affichage de la facture et de la charge POUR CHAQUE JOUEUR
 
@@ -13,6 +12,7 @@ def plotDetailedData(A,B,C,D,E,flexible_load,unite,path_to_folder):
     This function plots a grouped bar diagram with the average values of load for each t for each actor.
     For the path_to_folder, mind putting '\\' instead of '/'.
     """
+    N=int(A.size/A[0].size)
     
     AL1,AL2,AL3,AL4,AL5=np.zeros(T),np.zeros(T),np.zeros(T),np.zeros(T),np.zeros(T) #vector with the average loads for each t
     E1,E2,E3,E4,E5=np.zeros(T),np.zeros(T),np.zeros(T),np.zeros(T),np.zeros(T) #vector with the standard deviations of load for each t
@@ -49,24 +49,28 @@ def plotDetailedData(A,B,C,D,E,flexible_load,unite,path_to_folder):
     plt.xlim([0,T+5])
     plt.legend(loc='upper right')
     plt.title('Average '+ flexible_load  +' by actor and by time')
+    plt.grid(True)
     
     plt.subplot(5,1,2)
     p2=plt.bar(ind, AL2, 3*width, color='b', bottom=0, label="DC",yerr=E2)
     plt.ylabel(unite)
     plt.xlim([0,T+5])
     plt.legend(loc='upper right')
+    plt.grid(True)
     
     plt.subplot(5,1,3)
     p3=plt.bar(ind, AL3, 3*width, color='g', bottom=0, label="SB",yerr=E3)
     plt.ylabel(unite)
     plt.xlim([0,T+5])
     plt.legend(loc='upper right')
+    plt.grid(True)
     
     plt.subplot(5,1,4)
     p4=plt.bar(ind, AL4, 3*width, color='y', bottom=0, label="SF_1",yerr=E4)
     plt.ylabel(unite)
     plt.xlim([0,T+5])
     plt.legend(loc='upper right')
+    plt.grid(True)
     
     plt.subplot(5,1,5)
     p5=plt.bar(ind, AL5, 3*width, color='pink', bottom=0, label="SF_2",yerr=E5)
@@ -74,6 +78,7 @@ def plotDetailedData(A,B,C,D,E,flexible_load,unite,path_to_folder):
     plt.ylabel(unite)
     plt.xlim([0,T+5])
     plt.legend(loc='upper right')
+    plt.grid(True)
     
     plt.savefig(path_to_folder)
     return ("CS : "+str(round(A1,3))+", DC : "+str(round(A2,3))+", SB : "+str(round(A3,3))+", SF_1 : "+str(round(A4,3))+", SF_2 : "+str(round(A5,3))+" (en "+unite+")")
@@ -113,6 +118,7 @@ def plotDetailedData2(A,B,C,D,flexible_load,unite,path_to_folder):
     This function plots a grouped bar diagram with the average values of load for each t for each actor.
     For the path_to_folder, mind putting '\\' instead of '/'.
     """
+    N=int(A.size/A[0].size)
     
     AL1,AL2,AL3,AL4=np.zeros(T),np.zeros(T),np.zeros(T),np.zeros(T) #vector with the average loads for each t
     E1,E2,E3,E4=np.zeros(T),np.zeros(T),np.zeros(T),np.zeros(T) #vector with the standard deviations of load for each t
@@ -171,6 +177,8 @@ def plotDetailedData2(A,B,C,D,flexible_load,unite,path_to_folder):
 ### Affichage de la facture et de la charge TOTALE
     
 def PlotTotalAverage(Bill,load,path_to_folder):
+    N=int(Bill[0].size/Bill[0][0].size)
+    
     B=np.zeros(T)
     L=np.zeros(T)
     E1=np.zeros(T)
@@ -211,40 +219,22 @@ def PlotTotalAverage(Bill,load,path_to_folder):
     
 ### Affichage du prix du kWh
     
-def PlotAveragePrices(Bill,load,path_to_folder):
+def PlotAveragePrices(grid,path_to_folder):
+    N=int(grid[0].size/grid[0][0].size)
+    
     Sale=np.zeros(T)
     Purchase=np.zeros(T)
-    TotLoadP=np.zeros(T)
-    TotLoadS=np.zeros(T)
-    TotSale=np.zeros(T)
-    TotPurchase=np.zeros(T)
+    
     for t in range (T):
-        ls=0
-        lp=0
         p=0
         s=0
         for n in range (N):
-            for acteur in range (5):
-                
-                if(load[acteur,n,t]>0):
-                    lp+=load[acteur,n,t]
-                else:
-                    ls+=load[acteur,n,t]
-
-                if(bill[acteur,n,t]>0):
-                    p+=bill[acteur,n,t]
-                else:
-                    s+=bill[acteur,n,t]
+            p+=grid[0][n][t]
+            s+=grid[1][n][t]
                     
-        TotLoadP[t]=lp/N
-        TotSale[t]=s/N
-        TotLoadS[t]=ls/N
-        TotPurchase[t]=p/N
+        Sale[t]=s/N
+        Purchase[t]=p/N
         
-    for t in range (T):
-        Sale[t]=TotSale[t]/TotLoadS[t]
-        Purchase[t]=TotPurchase[t]/TotLoadP[t]
-    
     ind=np.arange(T)
     width=0.15
 
@@ -262,19 +252,61 @@ def PlotAveragePrices(Bill,load,path_to_folder):
     
     plt.savefig(path_to_folder)
     
+  
+### Affichage des prix d'achat et de vente
     
+def PlotPrices(buy,path_to_folder):
+    N=int(buy[0].size/buy[0][0].size)
     
-   
+    B=np.zeros((5,T))
+
+    for t in range (T):
+        
+        for acteur in range (5):
+            for n in range (N):
+                B[acteur,t]+=buy[acteur,n,t]
+            B[acteur,t]/=N
+        
+    barWidth=0.15
+    
+    r1 = np.arange(T)
+    r2 = [x + barWidth for x in r1]
+    r3 = [x + barWidth for x in r2]
+    r4 = [x + barWidth for x in r3]
+    r5 = [x + barWidth for x in r4]
+    
+    plt.bar(r1, B[0], color='r', width=barWidth,  label='CS')
+    plt.bar(r2, B[1], color='b', width=barWidth,  label='DC')
+    plt.bar(r3, B[2], color='g', width=barWidth,  label='SB')
+    plt.bar(r4, B[3], color='y', width=barWidth,  label='SF_1')
+    plt.bar(r5, B[4], color='pink', width=barWidth,  label='SF_2')
+
+    plt.xlabel('group', fontweight='bold')
+    plt.xticks([r + barWidth for r in range(T)], [t for t in range(T)])
+    
+    plt.title("Prices")
+    plt.legend()
+    plt.show()
+    
+    plt.savefig(path_to_folder)
+    
+
 
 ### Chargement des fichiers 
 #Pour tous les acteurs
-bill=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\simulation_1t\\simulation_1t\\bill.npy")
+bill=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\16-05-2019-S2\\16-05-2019-S2\\bill.npy")
 #Pour DC et SB
-heat_trans=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\simulation_1t\\simulation_1t\\heat_transactions.npy")
+heat_trans=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\16-05-2019-S2\\16-05-2019-S2\\heat_transactions.npy")
 #Pour tous les acteurs
-load=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\simulation_1t\\simulation_1t\\load.npy")
+load=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\16-05-2019-S2\\16-05-2019-S2\\load.npy")
 #Pour tous les acteurs sauf DC
-stock=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\simulation_1t\\simulation_1t\\stock.npy")
+stock=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\16-05-2019-S2\\16-05-2019-S2\\stock.npy")
+#Buy prices
+buy_prices=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\16-05-2019-S2\\16-05-2019-S2\\buy_prices.npy")
+#Sell prices
+sell_prices=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\16-05-2019-S2\\16-05-2019-S2\\sell_prices.npy")
+#Grid prices
+grid_prices=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR\\16-05-2019-S2\\16-05-2019-S2\\grid_prices.npy")
 
 
 ### Explotation des fichers (affichages et valeurs)
@@ -283,10 +315,10 @@ stock=np.load("C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\PIR
 #print(plotDetailedData(bill[0,:,:],bill[1,:,:],bill[2,:,:],bill[3,:,:],bill[4,:,:],"bill","€","C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Detailled bill"))
 
 ## Transactions de chaleur
-plotDetailedData1(heat_trans[:,0],heat_trans[:,1],"C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Detailled heat transactions")
+#plotDetailedData1(heat_trans[0,1,:],heat_trans[1,1,:],"C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Detailled heat transactions")
 
 ## Charge par joueur
-#print(plotDetailedData(load[0,:,:],load[1,:,:],load[2,:,:],load[3,:,:],load[4,:,:],"load","kWh","C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Detailled load"))
+print(plotDetailedData(load[0,:,:],load[1,:,:],load[2,:,:],load[3,:,:],load[4,:,:],"load","kWh","C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Detailled load"))
 
 ## Stock par joueur
 #print(plotDetailedData2(stock[0,:,:],stock[1,:,:],stock[2,:,:],stock[3,:,:],"stock","kWh","C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Detailled stock"))
@@ -295,4 +327,10 @@ plotDetailedData1(heat_trans[:,0],heat_trans[:,1],"C:\\Users\\Elisabeth\\Documen
 #PlotTotalAverage(bill,load,"C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Total bill and load")
 
 ## Prix de vente et d'achat
-#PlotAveragePrices(bill,load,"C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Prices")
+#PlotAveragePrices(grid_prices,"C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Prices")
+
+## Prix d'achat
+#print(PlotPrices(buy_prices,"C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Detailled buying prices"))
+
+## Prix de vente
+#print(PlotPrices(sell_prices,"C:\\Users\\Elisabeth\\Documents\\PONTS 2018-2019\\Semestre 2\\Detailled selling prices"))
