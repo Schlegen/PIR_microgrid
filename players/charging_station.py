@@ -165,8 +165,25 @@ if __name__ == '__main__':
 
 	charging_station.draw_random_scenario()
 	charging_station.compute_load(0)
-	for time in range (48):
-		load = charging_station.compute_load(time)
-		print (charging_station.load[time]) 
+	
+	for i in range(1000):
+		charging_station.draw_random_scenario()
+		for time in range (48):
+			charging_station.compute_load(time)
+			stock = charging_station.battery_stock["slow"][time] + charging_station.battery_stock["fast"][time]
+			if stock<0 : print (stock)
+		
+	# 	
+	# for time in range (48):
+	# 	charging_station.compute_load(time)
+	# 	stock = charging_station.battery_stock["slow"][time] + charging_station.battery_stock["fast"][time]
+	# 	
+	# 	if time<19 :
+	# 		print (str(round(charging_station.load[time],2))+" | " + str(round(stock,2)))
+	# 		
+	# 	if time == 20 : print ("***")
+	# 
+	# 	if time > 36 :
+	# 		print (str(round(charging_station.load[time],2)) +" | " + str(round(stock,2)))
 
 	print("Test passed, ready to submit !")
