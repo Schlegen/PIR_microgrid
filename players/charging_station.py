@@ -59,10 +59,10 @@ class ChargingStation:
 		if time < 11  :
 			load_battery["slow"] = 6
 				
-		if time >= 12 and time<18 and self.battery_stock["fast"][time]>(10*self.nb_fast+11):
+		if time >= 12 and time<18 and self.battery_stock["fast"][time]>(10*self.nb_fast + 13/self.efficiency):
 			load_battery["fast"] = -p_max["fast"]
 		
-		if time >= 12 and time<18 and self.battery_stock["slow"][time]>(10*self.nb_slow+1.5):
+		if time >= 12 and time<18 and self.battery_stock["slow"][time]>(10*self.nb_slow + 2/ self.efficiency):
 			load_battery["slow"] = -p_max["slow"]
 
 			
