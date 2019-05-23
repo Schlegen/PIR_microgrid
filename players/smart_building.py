@@ -63,14 +63,13 @@ class SmartBuilding:
             min=max=0
         
         if Watt_max_achat >= 10:
-                
-                for i in range(6):
+            for i in range(6):
                     demand_curve[i]=max - i * (max -min)/5
-            else:
-                for i in range(Watt_max_achat//2):
-                    demand_curve[i]=max - i * (max -min)/5
-                for i in range((Watt_max_achat//2)+1,6,1):
-                    demand_curve[i]=0
+        else:
+            for i in range(Watt_max_achat//2):
+                demand_curve[i]=max - i * (max -min)/5
+            for i in range((Watt_max_achat//2)+1,6,1):
+                demand_curve[i]=0
         
         
         return demand_curve
