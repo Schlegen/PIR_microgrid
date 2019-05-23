@@ -77,9 +77,7 @@ class SolarFarm2:
     
             if (time > 44):
                 load_battery =- 50
-            
 
-        return load_battery
 
         return load_battery
 

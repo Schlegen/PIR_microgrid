@@ -35,29 +35,37 @@ class SolarFarm:
         solar_power = self.scenario["load_solar_farm"][time]
 
         if time < 12 :
-            load_battery = 34
+            load_battery = 17
             
         if (time >11 and time < 17 and self.information["grid_buy_price"][time]<= 0.09):
-            load_battery = -15
+            load_battery = -25
         if (time >11 and time < 17 and self.information["grid_buy_price"][time]> 0.09):
-            load_battery = -max(1/5*stock,15)
+            load_battery = -max(1/5*stock,25)
         
         if (time >16 and time < 23 and self.information["grid_buy_price"][time]<= 0.08):
             load_battery = -15
         if (time >16 and time < 23 and self.information["grid_buy_price"][time]> 0.08):
             load_battery = -max(1/5*stock,15)
 
-        if self.scenario["load_solar_farm"][22]<15:#kW
-            if(time > 22 and time< 30):
-                load_battery = - min(15,solar_power/2)
+        if(time>22 and time <25 nd self.information["grid_buy_price"][time]<= 0.08):
+            load_battery = -15
+        if(time>22 and time <25 nd self.information["grid_buy_price"][time]> 0.08):
+            load_battery = -max(1/5*stock,15)
+            
+        if self.scenario["load_solar_farm"][23]>30:#kW
+            if(time > 24 and time< 30):
+                load_battery = 30
+        if self.scenario["load_solar_farm"][23]<=30:#kW
+            if(time > 24 and time< 30):
+                load_battery = 15
     
         if  time > 29 and time < 38 :
-                load_battery = 2*(100-self.battery_stock[28])/7
+                load_battery = - 1/5*stock
         
         if (time > 37 and time < 41 and self.information["grid_buy_price"][time]<= 0.08):
-                load_battery = -50
+                load_battery = -60
         if (time > 37 and time < 41 and self.information["grid_buy_price"][time]> 0.08):
-                load_battery = -max(1/5*self.battery_stock[time],15)
+                load_battery = -max(1/5*stock,60)
         
         if (time > 40) :
                 load_battery = -2*self.battery_stock[41]/6
