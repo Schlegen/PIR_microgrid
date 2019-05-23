@@ -37,7 +37,6 @@ class ChargingStation:
 		
 		self.nb_slow = int((pmax%22)/3)
 		self.nb_fast = cmax/40 - self.nb_slow
-		
 
 		p_max = {"slow" : 3*self.nb_slow, "fast" : 22*self.nb_fast}
 		c_max = {"slow" : 40*self.nb_slow, "fast" : 40*self.nb_fast}
@@ -60,10 +59,10 @@ class ChargingStation:
 		if time < 11  :
 			load_battery["slow"] = 6
 				
-		if time > 12 and time<18 and self.battery_stock["fast"][time]>(10*self.nb_fast+11):
+		if time >= 12 and time<18 and self.battery_stock["fast"][time]>(10*self.nb_fast+11):
 			load_battery["fast"] = -p_max["fast"]
 		
-		if time > 12 and time<18 and self.battery_stock["slow"][time]>(10*self.nb_slow+1.5):
+		if time >= 12 and time<18 and self.battery_stock["slow"][time]>(10*self.nb_slow+1.5):
 			load_battery["slow"] = -p_max["slow"]
 
 			
@@ -83,6 +82,9 @@ class ChargingStation:
 		cmax = self.scenario["load_charging_station_capacity"][0,time] # Available Capacity   
 		pmax = self.scenario["load_charging_station_capacity"][1,time] # Available Power
 		soc = self.scenario["load_charging_station_capacity"][2,time]  # State Of Charge of the vehicles
+		
+		self.nb_slow = int((pmax%22)/3)
+		self.nb_fast = cmax/40 - self.nb_slow
 		
 		nb={"slow" : self.nb_slow, "fast" : self.nb_fast}
 		p_max = {"slow" : 3*self.nb_slow, "fast" : 22*self.nb_fast}
@@ -114,13 +116,9 @@ class ChargingStation:
 			
 			elif new_stock[speed] > c_max[speed]:
 				load_battery[speed] = (c_max[speed] - self.battery_stock[speed][time] ) / (self.efficiency*self.dt)
+				
 				new_stock[speed] = c_max[speed]
-
-
-		
-		for speed in ["slow","fast"] :
-			self.battery_stock[speed][time+1] = new_stock[speed]
-		
+				
 		for speed in ["slow","fast"] :
 			if abs(load_battery[speed]) >= p_max[speed] :
 				load_battery[speed] = p_max[speed]*np.sign(load_battery[speed])
@@ -166,24 +164,24 @@ if __name__ == '__main__':
 	charging_station.draw_random_scenario()
 	charging_station.compute_load(0)
 	
-	for i in range(1000):
-		charging_station.draw_random_scenario()
-		for time in range (48):
-			charging_station.compute_load(time)
-			stock = charging_station.battery_stock["slow"][time] + charging_station.battery_stock["fast"][time]
-			if stock<0 : print (stock)
+	# for i in range(1000):
+	# 	charging_station.draw_random_scenario()
+	# 	for time in range (48):
+	# 		charging_station.compute_load(time)
+	# 		stock = charging_station.battery_stock["slow"][time] + charging_station.battery_stock["fast"][time]
+	# 		if stock<0 : print (stock)
 		
-	# 	
-	# for time in range (48):
-	# 	charging_station.compute_load(time)
-	# 	stock = charging_station.battery_stock["slow"][time] + charging_station.battery_stock["fast"][time]
-	# 	
-	# 	if time<19 :
-	# 		print (str(round(charging_station.load[time],2))+" | " + str(round(stock,2)))
-	# 		
-	# 	if time == 20 : print ("***")
-	# 
-	# 	if time > 36 :
-	# 		print (str(round(charging_station.load[time],2)) +" | " + str(round(stock,2)))
+	
+	for time in range (48):
+		charging_station.compute_load(time)
+		stock = charging_station.battery_stock["slow"][time] + charging_station.battery_stock["fast"][time]
+		
+		if time<19 :
+			print (str(round(charging_station.load[time],1))+" | " + str(round(stock,1)))
+			
+		if time == 20 : print ("***")
+	
+		if time > 36 :
+			print (str(round(charging_station.load[time],1)) +" | " + str(round(stock,1)))
 
 	print("Test passed, ready to submit !")
