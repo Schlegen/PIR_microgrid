@@ -124,6 +124,9 @@ class ChargingStation:
 		for speed in ["slow","fast"] :
 			if abs(load_battery[speed]) >= p_max[speed] :
 				load_battery[speed] = p_max[speed]*np.sign(load_battery[speed])
+				
+		for speed in ["slow","fast"] :
+			self.battery_stock[speed][time+1]=new_stock[speed]
 		
 		return load_battery
 		
@@ -162,5 +165,8 @@ if __name__ == '__main__':
 
 	charging_station.draw_random_scenario()
 	charging_station.compute_load(0)
+	for time in range (48):
+		load = charging_station.compute_load(time)
+		print (charging_station.load[time]) 
 
 	print("Test passed, ready to submit !")
