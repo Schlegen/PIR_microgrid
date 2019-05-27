@@ -183,10 +183,9 @@ class Community:
 
 	def compute_electricity_bills(self, time, load, demand, supply):
 
-		#internal_trade = self.dt*self.prices["internal"][time]*min(demand, supply)
-        internal_trade = 0
+		internal_trade = self.dt*self.prices["internal"][time]*min(demand, supply)
 		purchase = internal_trade + self.prices["external_purchase"][time]*max(0, load)*self.dt
-		sale = internal_trade + self.prices["external_purchase"][time]*max(0, -load)*self.dt
+		sale = internal_trade + self.prices["external_sale"][time]*max(0, -load)*self.dt
 
 		for name, player in self.players.items():
 
@@ -200,11 +199,11 @@ class Community:
 				continue
 
 			if load >= 0:
-				electric_bill = purchase * load / demand
+				electric_bill = self.prices["external_purchase"][time] * load * self.dt
 				player.bill[time] += electric_bill
 				player.information["my_buy_price"][time+1] = electric_bill / (load*self.dt)
 			else:
-				electric_bill = sale * load / supply
+				electric_bill = self.prices["external_sale"][time] * load * self.dt
 				player.bill[time] += electric_bill
 				player.information["my_sell_price"][time+1] = electric_bill / (load*self.dt)
 
