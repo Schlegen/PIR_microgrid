@@ -199,11 +199,11 @@ class Community:
 				continue
 
 			if load >= 0:
-				electric_bill = self.prices["external_purchase"][time] * load * self.dt
+				electric_bill = purchase * load / demand
 				player.bill[time] += electric_bill
 				player.information["my_buy_price"][time+1] = electric_bill / (load*self.dt)
 			else:
-				electric_bill = self.prices["external_sale"][time] * load * self.dt
+				electric_bill = sale * load / supply
 				player.bill[time] += electric_bill
 				player.information["my_sell_price"][time+1] = electric_bill / (load*self.dt)
 
