@@ -131,5 +131,6 @@ if __name__ == '__main__':
 
     solar_farm.draw_random_scenario()
     solar_farm.compute_load(0)
-    solar_farm.flexible(0)
+    for i in range(48):
+        solar_farm.flexible(i)
     print("Test passed, ready to submit !")

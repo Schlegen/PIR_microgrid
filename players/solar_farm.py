@@ -47,9 +47,9 @@ class SolarFarm:
         if (time >16 and time < 23 and self.information["grid_buy_price"][time]> 0.08):
             load_battery = -max(1/5*stock,15)
 
-        if(time>22 and time <25 nd self.information["grid_buy_price"][time]<= 0.08):
+        if(time>22 and time <25 and self.information["grid_buy_price"][time]<= 0.08):
             load_battery = -15
-        if(time>22 and time <25 nd self.information["grid_buy_price"][time]> 0.08):
+        if(time>22 and time <25 and self.information["grid_buy_price"][time]> 0.08):
             load_battery = -max(1/5*stock,15)
             
         if self.scenario["load_solar_farm"][23]>30:#kW
@@ -122,6 +122,7 @@ if __name__ == '__main__':
 
     solar_farm.draw_random_scenario()
     solar_farm.compute_load(0)
-    solar_farm.flexible(0)
+    for i in range(48):
+        solar_farm.flexible(i)
 
     print("Test passed, ready to submit !")
