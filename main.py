@@ -183,8 +183,8 @@ class Community:
 
 	def compute_electricity_bills(self, time, load, demand, supply):
 
-		internal_trade = self.dt*self.prices["internal"][time]*min(demand, supply)
-
+		#internal_trade = self.dt*self.prices["internal"][time]*min(demand, supply)
+        internal_trade = 0
 		purchase = internal_trade + self.prices["external_purchase"][time]*max(0, load)*self.dt
 		sale = internal_trade + self.prices["external_purchase"][time]*max(0, -load)*self.dt
 
