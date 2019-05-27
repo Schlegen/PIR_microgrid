@@ -33,17 +33,17 @@ class DataCenter:
 
         supply_curves = np.zeros(6)
         mini,maxi=0,0
-        if (t>=0 and t<12) or t>=44:
-            maxi=0.057/1.48
-            mini=0.06/2.66
-        if (t>=12 and t<16) or (t>=40 and t<44):
-            maxi=0.09/1.48
-            mini=0.10/2.66
-        if (t>=16 and t<40):
-            maxi=0.08/1.48
-            mini=0.1/2.66
-        for q in range(6):
-            supply_curves[q]=(2*q/10)*maxi+(1-2*q/10)*mini
+#        if (t>=0 and t<12) or t>=44:
+#            maxi=0.057/1.48
+#            mini=0.06/2.66
+#        if (t>=12 and t<16) or (t>=40 and t<44):
+#            maxi=0.09/1.48
+#            mini=0.10/2.66
+#        if (t>=16 and t<40):
+#            maxi=0.08/1.48
+#            mini=0.1/2.66
+#        for q in range(6):
+#            supply_curves[q]=(2*q/10)*maxi+(1-2*q/10)*mini
 
         ## to be completed by the students ##
 
